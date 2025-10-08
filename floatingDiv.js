@@ -1,0 +1,316 @@
+/* Replaced entire floatingDiv.js content with the provided floating div implementation */
+const floatingDiv = document.createElement('div');
+floatingDiv.id = 'floating-div';
+floatingDiv.style.cssText = `
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  
+  /* Allow container to expand slightly with content */
+  max-height: 300px;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  user-select: none;
+  font-family: sans-serif;
+  z-index: 10000;
+  transition: box-shadow 0.2s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  display: none;
+  flex-direction: column;
+  
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(0, 0, 0, 0.1);
+`;
+
+// Add WebKit-specific scrollbar styling
+const style = document.createElement('style');
+style.textContent = `
+  #floating-div::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  #floating-div::-webkit-scrollbar-track {
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 4px;
+  }
+  
+  #floating-div::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+  }
+  
+  #floating-div::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  #response-div {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+  }
+
+  #follow-up-div {
+    /* Removed follow-up div styling as follow-up functionality is removed */
+    display: none;
+  }
+`;
+document.head.appendChild(style);
+
+let isDragging = false;
+let offsetX, offsetY;
+
+floatingDiv.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - floatingDiv.getBoundingClientRect().left;
+  offsetY = e.clientY - floatingDiv.getBoundingClientRect().top;
+  e.preventDefault();
+  floatingDiv.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
+  const divWidth = floatingDiv.offsetWidth;
+  const divHeight = floatingDiv.offsetHeight;
+
+  let newLeft = e.clientX - offsetX;
+  let newTop = e.clientY - offsetY;
+
+  newLeft = Math.max(0, Math.min(newLeft, viewportWidth - divWidth));
+  newTop = Math.max(0, Math.min(newTop, viewportHeight - divHeight));
+
+  floatingDiv.style.left = newLeft + 'px';
+  floatingDiv.style.top = newTop + 'px';
+  floatingDiv.style.transform = '';
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  floatingDiv.style.cursor = 'grab';
+});
+
+
+let ctrlPressed = false;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Control') {
+    ctrlPressed = true;
+  }
+
+  if (ctrlPressed && e.key.startsWith('Arrow')) {
+    e.preventDefault();
+
+    let currentLeft, currentTop;
+    if (floatingDiv.style.left) {
+      currentLeft = parseInt(floatingDiv.style.left);
+    } else {
+      const rect = floatingDiv.getBoundingClientRect();
+      currentLeft = rect.left;
+    }
+
+    if (floatingDiv.style.top) {
+      currentTop = parseInt(floatingDiv.style.top);
+    } else {
+      currentTop = 10;
+    }
+
+    const step = 10;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+    const divWidth = floatingDiv.offsetWidth;
+    const divHeight = floatingDiv.offsetHeight;
+
+    floatingDiv.style.transform = '';
+
+    switch (e.key) {
+      case 'ArrowUp':
+        floatingDiv.style.top = Math.max(0, currentTop - step) + 'px';
+        break;
+      case 'ArrowDown':
+        floatingDiv.style.top = Math.min(viewportHeight - divHeight, currentTop + step) + 'px';
+        break;
+      case 'ArrowLeft':
+        floatingDiv.style.left = Math.max(0, currentLeft - step) + 'px';
+        break;
+      case 'ArrowRight':
+        floatingDiv.style.left = Math.min(viewportWidth - divWidth, currentLeft + step) + 'px';
+        break;
+    }
+  }
+});
+
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Control') {
+    ctrlPressed = false;
+  }
+});
+
+
+
+window.floatingDiv = floatingDiv;
+
+// Function to toggle floating div visibility
+function toggleFloatingDivVisibility() {
+  if (floatingDiv.style.display === 'none') {
+    floatingDiv.style.display = 'flex';
+  } else {
+    floatingDiv.style.display = 'none';
+  }
+}
+window.toggleFloatingDivVisibility = toggleFloatingDivVisibility;
+
+// Function to toggle floating div visibility
+function toggleFloatingDivVisibility() {
+  if (floatingDiv.style.display === 'none') {
+    floatingDiv.style.display = 'flex';
+  } else {
+    floatingDiv.style.display = 'none';
+  }
+}
+window.toggleFloatingDivVisibility = toggleFloatingDivVisibility;
+
+
+// Simple markdown renderer
+function renderMarkdown(text) {
+  if (!text) return '';
+
+  // Escape HTML characters
+  text = text.replace(/&/g, '&amp;')
+             .replace(/</g, '&lt;')
+             .replace(/>/g, '&gt;');
+
+  // Code blocks (```language\ncode```)
+  text = text.replace(/```(\w*)\n([\s\S]*?)\n```/g, '<pre><code class="language-$1">$2</code></pre>');
+
+  // Inline code (`code`)
+  text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Headers
+  text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+  text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+  text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+
+  // Bold
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+  // Italic
+  text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+  text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+
+  // Links
+  text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+  // Lists
+  text = text.replace(/^(\s*)\* (.*$)/gm, '$1<li>$2</li>');
+  text = text.replace(/^(\s*)- (.*$)/gm, '$1<li>$2</li>');
+  text = text.replace(/(<li>.*<\/li>(\s*<li>.*<\/li>)*)/g, '<ul>$1</ul>');
+
+  text = text.replace(/^(\s*)\d+\. (.*$)/gm, '$1<li>$2</li>');
+  text = text.replace(/(<li>.*<\/li>(\s*<li>.*<\/li>)*)/g, '<ol>$1</ol>');
+
+  // 🔹 Thinking blocks -> collapsible dropdown
+  text = text.replace(/&lt;(thinking|think)&gt;([\s\S]*?)&lt;\/\1&gt;/gi, (match, tag, inner) => {
+    return `
+      <details style="margin:4px 0;padding:4px;background:rgba(255,255,255,0.05);border-radius:6px;">
+        <summary style="cursor:pointer;color:#ccc;">Hidden reasoning</summary>
+        <div style="white-space:pre-wrap;margin-top:4px;">${inner.trim()}</div>
+      </details>
+    `;
+  });
+
+  // Line breaks
+  text = text.replace(/\n/g, '<br>');
+
+  return text;
+}
+
+
+// Function to update floating div with markdown content
+function updateFloatingDivWithMarkdown(content, append = false) {
+  if (!append) {
+    // Switch to response state: clear previous asking state
+    floatingDiv.innerHTML = '';
+    // Create response div
+    const resp = document.createElement('div');
+    resp.id = 'response-div';
+    resp.style.cssText = `
+      flex: 2 1 auto;
+      overflow-y: auto;
+      padding-right: 8px;
+      word-wrap: break-word;
+    `;
+    resp.innerHTML = renderMarkdown(content);
+   // resp.scrollTop = 0;
+    floatingDiv.appendChild(resp);
+    window.responseDiv = resp;
+  } else {
+    // Append mode: add new content to existing response div
+    if (!window.responseDiv) {
+      // If responseDiv doesn't exist, create it
+      const resp = document.createElement('div');
+      resp.id = 'response-div';
+      resp.style.cssText = `
+        flex: 1 1 auto;
+        overflow-y: auto;
+        padding-right: 8px;
+        word-wrap: break-word;
+      `;
+      floatingDiv.appendChild(resp);
+      window.responseDiv = resp;
+    }
+    // Append new content rendered as markdown
+    window.responseDiv.innerHTML = renderMarkdown(window.responseDiv.textContent + content);
+    window.responseDiv.scrollTop = window.responseDiv.scrollHeight;
+  }
+}
+
+window.renderMarkdown = renderMarkdown;
+window.updateFloatingDivWithMarkdown = updateFloatingDivWithMarkdown;
+
+// Function to show input field in the floating div
+function showInputField(selectedText) {
+  // Simplified to only return null input and button since follow-up input is removed
+  return { input: null, button: null, selectedText };
+}
+
+window.showInputField = showInputField;
+
+ // Listen for reload action to update the floating div state
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'hideShowFloatingDiv') {
+    toggleFloatingDivVisibility();
+  } else if (message.action === 'askGenieClick') {
+    // Only show floating div if it is currently hidden
+    if (floatingDiv.style.display === 'none') {
+      toggleFloatingDivVisibility();
+      // If response is visible, clear everything
+      if (window.responseDiv && window.responseDiv.innerHTML.trim() !== '') {
+        floatingDiv.innerHTML = '';
+      }
+      // Automatically send the question and show loading state
+      updateFloatingDivWithMarkdown('thinking...');
+      // TODO: Implement sending the question to the backend or extension logic
+      // For example, send a message to background or content script to process the question
+    
+      chrome.runtime.sendMessage({
+        action: 'processQuestion',
+        question: message.selection || ''
+      });
+    }
+  }
+});

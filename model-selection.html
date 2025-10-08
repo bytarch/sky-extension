@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Model Selection</title>
+  <script src="tailwind-cdn.js"></script>
+  <style>
+    .model-card {
+      transition: all 0.2s ease;
+    }
+    .model-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .model-card.selected {
+      border-left: 4px solid #10B981;
+      background-color: #F0FDF4;
+    }
+    .model-card.selected .model-name {
+      font-weight: 600;
+      color: #047857;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center p-6" style="width:700px; height:600px;">
+  <h1 class="text-3xl font-bold mb-6">Extension</h1>
+
+  <nav class="w-full max-w-2xl mb-4 border-b border-gray-300">
+    <ul class="flex space-x-4 text-blue-600">
+      <li><button id="tab-models" class="pb-2 border-b-2 border-blue-600 font-semibold">Models</button></li>
+      <li><button id="tab-settings" class="pb-2 border-b-2 border-transparent hover:border-blue-600">Settings</button></li>
+    </ul>
+  </nav>
+
+  <section id="models-section" class="w-full max-w-2xl space-y-4">
+    <div class="mb-4">
+      <input type="text" id="model-search" class="w-full p-2 border border-gray-300 rounded" placeholder="Search models...">
+    </div>
+    <div id="model-list"></div>
+  </section>
+
+  <section id="settings-section" class="w-full max-w-2xl space-y-4 hidden">
+    <div class="border-b border-gray-300 mb-4">
+      <ul class="flex space-x-4 text-blue-600">
+        <li><button id="tab-settings-main" class="pb-2 border-b-2 border-blue-600 font-semibold">API Key</button></li>
+        <li><button id="tab-settings-usage" class="pb-2 border-b-2 border-transparent hover:border-blue-600">Usage</button></li>
+     <li><button id="tab-settings-prompt" class="pb-2 border-b-2 border-transparent hover:border-blue-600">Custom Instructions</button></li>
+
+      </ul>
+          </div>
+
+    <div id="settings-main-content" class="space-y-4">
+      <label for="apikey-input" class="block font-semibold mb-2">API Key:</label>
+      <input id="apikey-input" type="password" class="w-full p-2 border border-gray-300 rounded" placeholder="Enter your API key" />
+      <button id="save-apikey" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save API Key</button>
+      <p id="save-status" class="text-green-600 mt-2 hidden">API Key saved!</p>
+    </div>
+
+    <div id="settings-usage-content" class="hidden">
+      <h3 class="font-semibold mb-2">Usage Information</h3>
+      <div id="usage-content" class="bg-gray-50 p-4 rounded border border-gray-200">
+        No usage data available
+      </div>
+    </div>
+    <div id="settings-prompt-content" class="hidden space-y-4">
+      <label for="custom-prompt" class="block font-semibold mb-2">Custom Instructions Prompt (optional):</label>
+      <p class="text-gray-700 text-sm mb-2">An introduction is set automatically for answering questions only. You can change it by entering your own below.</p>
+      
+      <div class="mb-4">
+        <label class="block font-semibold mb-2">Default Prompts:</label>
+        <div class="flex space-x-4 mb-2">
+          <button id="summarize-prompt" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Summarize</button>
+          <button id="answer-prompt" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300">Answer Questions</button>
+        </div>
+        <p class="text-gray-600 text-sm mb-4">Select a default prompt or create your own below.</p>
+      </div>
+      
+      <textarea id="custom-prompt" rows="6" class="w-full p-2 border border-gray-300 rounded" placeholder="Enter your own Instructions"></textarea>
+      <p class="text-gray-600 text-sm mt-1 mb-4 whitespace-pre-wrap">These instructions tell the AI how to treat the highlighted text and how to respond, for example, to summarize, give straight answers, or follow other response styles. You are setting how the AI should respond.</p>
+      <button id="save-prompt" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Save Prompt</button>
+      <p id="prompt-status" class="text-green-600 mt-2 hidden">Prompt saved!</p>
+    </div>
+  </section>
+
+
+  </section>
+
+  <script src="crypto-storage.js"></script>
+  <script src="usage.js"></script>
+  <script src="model-selection.js"></script>
+</body>
+</html>

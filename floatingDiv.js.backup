@@ -1,0 +1,135 @@
+/* Replaced entire floatingDiv.js content with the provided floating div implementation */
+const floatingDiv = document.createElement('div');
+floatingDiv.id = 'floating-div';
+floatingDiv.style.cssText = `
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+  
+  /* Allow container to expand slightly with content */
+  max-height: 300px;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: grab;
+  user-select: none;
+  font-family: sans-serif;
+  z-index: 10000;
+  transition: box-shadow 0.2s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  word-wrap: break-word;
+  display: none;
+  flex-direction: column;
+  
+  /* Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.5) rgba(0, 0, 0, 0.1);
+`;
+
+// Add WebKit-specific scrollbar styling
+const style = document.createElement('style');
+style.textContent = `
+  #floating-div::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  #floating-div::-webkit-scrollbar-track {
+    background: rgba(74, 144, 226, 0.3);
+    border-radius: 4px;
+  }
+  
+  #floating-div::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 4px;
+  }
+  
+  #floating-div::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  #response-div {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-bottom: 8px;
+    word-wrap: break-word;
+  }
+
+  #follow-up-div {
+    /* Removed follow-up div styling as follow-up functionality is removed */
+    display: none;
+  }
+`;
+document.head.appendChild(style);
+
+let isDragging = false;
+let offsetX, offsetY;
+
+floatingDiv.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  offsetX = e.clientX - floatingDiv.getBoundingClientRect().left;
+  offsetY = e.clientY - floatingDiv.getBoundingClientRect().top;
+  e.preventDefault();
+  floatingDiv.style.cursor = 'grabbing';
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
+  const divWidth = floatingDiv.offsetWidth;
+  const divHeight = floatingDiv.offsetHeight;
+
+  let newLeft = e.clientX - offsetX;
+  let newTop = e.clientY - offsetY;
+
+  newLeft = Math.max(0, Math.min(newLeft, viewportWidth - divWidth));
+  newTop = Math.max(0, Math.min(newTop, viewportHeight - divHeight));
+
+  floatingDiv.style.left = newLeft + 'px';
+  floatingDiv.style.top = newTop + 'px';
+  floatingDiv.style.transform = '';
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  floatingDiv.style.cursor = 'grab';
+});
+
+
+let ctrlPressed = false;
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Control') {
+    ctrlPressed = true;
+  }
+
+  if (ctrlPressed && e.key.startsWith('Arrow')) {
+    e.preventDefault();
+
+    let currentLeft, currentTop;
+    if (floatingDiv.style.left) {
+      currentLeft = parseInt(floatingDiv.style.left);
+    } else {
+      const rect = floatingDiv.getBoundingClientRect();
+      currentLeft = rect.left;
+    }
+
+    if (floatingDiv.style.top) {
+      currentTop = parseInt(floatingDiv.style.top);
+    } else {
+      currentTop = 10;
+    }
+
+    const step = 10;
+    const viewportWidth = document.documentElement.clientWidth;
+    const viewportHeight = document.documentElement.clientHeight;
+    const divWidth = floatingDiv.offsetWidth;
+    const divHeight = floatingDiv.offsetHeight

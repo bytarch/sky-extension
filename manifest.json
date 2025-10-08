@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "Sky Auto Answer (Lite)",
+  "version": "1.0",
+  "description": " versatile Chrome extension designed to assist students by providing contextual assistance and quick access to study materials. Sky enhances learning efficiency with powerful.",
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["crypto-storage.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Ask Sky",
+    "default_popup": "model-selection.html"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "desktopCapture"
+  ],
+  "host_permissions": [
+    "https://flow-models.bytarch.dpdns.org/*"
+  ],
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "commands": {
+   "startScreenRecord": {
+    "suggested_key": {
+      "default": "Alt+R"
+    },
+    "description": "Start screen recording"
+  },
+  "stopScreenRecord": {
+    "suggested_key": {
+      "default": "Alt+S"
+    },
+    "description": "Stop screen recording"
+  },
+    "hideShowFloatingDiv": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Hide or Show Floating Div"
+    },
+    "askGenie": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "Ask Sky"
+    }
+  }
+}
