@@ -26,6 +26,20 @@ chrome.runtime.onInstalled.addListener(() => {
     title: "Stop Screen Recording",
     contexts: ["all"]
   });
+
+  // Context menu to summarize YouTube video
+  chrome.contextMenus.create({
+    id: "summarizeYouTube",
+    title: "Summarize YouTube Video",
+    contexts: ["page"]
+  });
+
+  // Context menu to show response history
+  chrome.contextMenus.create({
+    id: "showResponseHistory",
+    title: "Show Response History",
+    contexts: ["all"]
+  });
 });
 
 chrome.action.onClicked.addListener((tab) => {
@@ -58,6 +72,14 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     chrome.tabs.sendMessage(tab.id, {
       action: 'stopScreenRecord'
     });
+  } else if (info.menuItemId === "summarizeYouTube") {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'summarizeYouTubeVideo'
+    });
+  } else if (info.menuItemId === "showResponseHistory") {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'showResponseHistory'
+    });
   }
 });
  
@@ -83,6 +105,10 @@ chrome.commands.onCommand.addListener((command) => {
           console.warn('No text selected for Ask Genie.');
         }
       });
+    } else if (command === 'summarizeYouTube') {
+      chrome.tabs.sendMessage(tabId, { action: 'summarizeYouTubeVideo' });
+    } else if (command === 'showResponseHistory') {
+      chrome.tabs.sendMessage(tabId, { action: 'showResponseHistory' });
     }
   });
 });

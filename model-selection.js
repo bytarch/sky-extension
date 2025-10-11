@@ -173,10 +173,8 @@ document.addEventListener('DOMContentLoaded', () => {
     settingsUsageContent.classList.add('hidden');
   }
 
-  // Save custom prompt elements
+  // Custom prompt elements
   const customPromptInput = document.getElementById('custom-prompt');
-  const savePromptBtn = document.getElementById('save-prompt');
-  const promptStatus = document.getElementById('prompt-status');
   const summarizePromptBtn = document.getElementById('summarize-prompt');
   const answerPromptBtn = document.getElementById('answer-prompt');
 
@@ -189,39 +187,72 @@ document.addEventListener('DOMContentLoaded', () => {
   // Set up event listeners for default prompt buttons
   summarizePromptBtn.addEventListener('click', () => {
     customPromptInput.value = defaultPrompts.summarize;
-    // Automatically save the prompt
-    chrome.storage.local.set({ customPrompt: defaultPrompts.summarize }, () => {
-      promptStatus.classList.remove('hidden');
-      setTimeout(() => promptStatus.classList.add('hidden'), 2000);
-    });
+    savePromptViaAPI(defaultPrompts.summarize);
   });
 
   answerPromptBtn.addEventListener('click', () => {
     customPromptInput.value = defaultPrompts.answer;
-    // Automatically save the prompt
-    chrome.storage.local.set({ customPrompt: defaultPrompts.answer }, () => {
-      promptStatus.classList.remove('hidden');
-      setTimeout(() => promptStatus.classList.add('hidden'), 2000);
-    });
+    savePromptViaAPI(defaultPrompts.answer);
   });
 
-  // Load saved custom prompt and initialize default if empty
-  chrome.storage.local.get('customPrompt', (result) => {
-    const defaultPrompt = window.SYSTEM_PROMPT_MAIN || '';
-    if (result.customPrompt && result.customPrompt.trim() !== '') {
-      customPromptInput.value = result.customPrompt;
-    } else {
+  // Auto-save with debounce
+  let debounceTimer;
+  async function savePromptViaAPI(prompt) {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(async () => {
+      try {
+        const configs = await window.SkyConfigsAPI.getAll();
+        if (configs && configs.length > 0) {
+          configs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+          // If the latest config has the same prompt, do nothing
+          if (configs[0].system_prompt === prompt) {
+            return;
+          } else {
+            // Update the latest config
+            await window.SkyConfigsAPI.update(configs[0].id, prompt);
+          }
+        } else {
+          // No configs, create new
+          await window.SkyConfigsAPI.create(prompt);
+        }
+      } catch (error) {
+        console.error('Failed to save prompt:', error);
+      }
+    }, 1000); // 1 second debounce
+  }
+
+  // Load saved custom prompt from API
+  async function loadPrompt() {
+    try {
+      const configs = await window.SkyConfigsAPI.getAll();
+      const defaultPrompt = "Answer the following multiple choice and true/false questions based on the provided text. Provide only the correct answers without explanations.";
+      if (configs && configs.length > 0) {
+        configs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+        customPromptInput.value = configs[0].system_prompt;
+      } else {
+        customPromptInput.value = defaultPrompt;
+        // Save the default prompt
+        savePromptViaAPI(defaultPrompt);
+      }
+    } catch (error) {
+      console.error('Failed to load prompt:', error);
+      const defaultPrompt = "Answer the following multiple choice and true/false questions based on the provided text. Provide only the correct answers without explanations.";
       customPromptInput.value = defaultPrompt;
+      // Save the default prompt on error (assuming no configs)
+      savePromptViaAPI(defaultPrompt);
     }
-  });
+  }
 
-  savePromptBtn.addEventListener('click', () => {
-    const prompt = customPromptInput.value.trim();
-    chrome.storage.local.set({ customPrompt: prompt }, () => {
-      promptStatus.classList.remove('hidden');
-      setTimeout(() => promptStatus.classList.add('hidden'), 2000);
+  loadPrompt();
+
+  // Auto-save on input
+  if (customPromptInput) {
+    customPromptInput.addEventListener('input', (e) => {
+      const prompt = e.target.value;
+      savePromptViaAPI(prompt);
     });
-  });
+  }
+
 
   function showSettingsUsageTab() {
     tabSettingsUsage.classList.add('border-blue-600', 'font-semibold');

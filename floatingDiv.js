@@ -258,6 +258,25 @@ function updateFloatingDivWithMarkdown(content, append = false) {
    // resp.scrollTop = 0;
     floatingDiv.appendChild(resp);
     window.responseDiv = resp;
+
+    if (content !== 'thinking...' && !document.getElementById('extend-chat-button')) {
+      const extendButton = document.createElement('button');
+      extendButton.id = 'extend-chat-button';
+      extendButton.textContent = 'Extend Chat';
+      extendButton.style.cssText = `
+        margin-top: 4px;
+        padding: 4px 8px;
+        border: none;
+        border-radius: 6px;
+        background-color: #28a745;
+        color: white;
+        cursor: pointer;
+        font-size: 12px;
+        align-self: flex-end;
+      `;
+      extendButton.onclick = window.extendChat;
+      floatingDiv.appendChild(extendButton);
+    }
   } else {
     // Append mode: add new content to existing response div
     if (!window.responseDiv) {
@@ -281,6 +300,17 @@ function updateFloatingDivWithMarkdown(content, append = false) {
 
 window.renderMarkdown = renderMarkdown;
 window.updateFloatingDivWithMarkdown = updateFloatingDivWithMarkdown;
+
+// Function to extend chat
+function extendChat() {
+  if (window.responseDiv) {
+    window.chatContext = window.responseDiv.textContent;
+  }
+  if (typeof window.openFloatingChat === 'function') {
+    window.openFloatingChat();
+  }
+}
+window.extendChat = extendChat;
 
 // Function to show input field in the floating div
 function showInputField(selectedText) {

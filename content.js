@@ -11,7 +11,7 @@ function loadFloatingDiv() {
   document.head.appendChild(script);
 }
 
-// Load the floating div when the page is loaded
+ // Load the floating div when the page is loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', loadFloatingDiv);
 } else {
@@ -31,7 +31,9 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       startScreenRecording();
     } else if (request.action === 'stopScreenRecord') {
       stopScreenRecording();
-    } 
+    } else if (request.action === 'summarizeYouTubeVideo') {
+      checkAndSummarizeYouTubeVideo();
+    }
   });
 
   // Function to start screen recording
@@ -151,6 +153,23 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             function processChunk({ done, value }) {
               if (done) {
                 // Stream complete
+                // Log the response to the sky_responses endpoint
+                fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apikey
+                  },
+                  body: JSON.stringify({
+                    model: model,
+                    prompt: combinedUserContent,
+                    response: accumulatedText
+                  })
+                }).then(res => {
+                  if (!res.ok) {
+                    console.error('Failed to log response');
+                  }
+                }).catch(err => console.error('Error logging response:', err));
                 return;
               }
               

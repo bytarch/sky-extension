@@ -7,7 +7,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["crypto-storage.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js"],
+      "js": ["crypto-storage.js", "youtube-summarizer.js", "youtube-chat.js", "response-history.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js"],
       "css": ["content.css"]
     }
   ],
@@ -26,7 +26,8 @@
     "desktopCapture"
   ],
   "host_permissions": [
-    "https://flow-models.bytarch.dpdns.org/*"
+    "https://flow-models.bytarch.dpdns.org/*",
+    "https://api.bytarch.dpdns.org/*"
   ],
   
   "web_accessible_resources": [
@@ -54,9 +55,6 @@
     "description": "Stop screen recording"
   },
     "hideShowFloatingDiv": {
-      "suggested_key": {
-        "default": "Alt+Q"
-      },
       "description": "Hide or Show Floating Div"
     },
     "askGenie": {
@@ -64,6 +62,12 @@
         "default": "Alt+A"
       },
       "description": "Ask Sky"
+    },
+    "showResponseHistory": {
+      "suggested_key": {
+        "default": "Alt+H"
+      },
+      "description": "Show Response History"
     }
   }
 }
