@@ -37,7 +37,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       window.updateFloatingDivWithMarkdown('thinking...');
       // Send selected text directly to API
       processUserQuestion( request.selection);
-    }  else if (request.action === 'startScreenRecord') {
     } else if (request.action === 'hideShowFloatingDiv') {
       if (window.toggleFloatingDivVisibility) {
         window.toggleFloatingDivVisibility();
@@ -77,6 +76,10 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       img.src = request.dataUrl;
     }
   });
+
+  // Global variables for screen recording
+  let mediaRecorder;
+  let screenStream;
 
   // Function to start screen recording
   async function startScreenRecording() {

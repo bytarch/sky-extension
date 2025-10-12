@@ -141,9 +141,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       action: 'summarizeYouTubeVideo'
     });
   } else if (info.menuItemId === "showResponseHistory") {
-    chrome.tabs.sendMessage(tab.id, {
-      action: 'showResponseHistory'
-    });
+    chrome.tabs.create({ url: 'https://bytarch.netlify.app/dashboard/history?tab=sky' });
   } else if (info.menuItemId === "takeScreenshot") {
     chrome.tabs.sendMessage(tab.id, {
       action: 'takeScreenshot'
@@ -176,7 +174,7 @@ chrome.commands.onCommand.addListener((command) => {
     } else if (command === 'summarizeYouTube') {
       chrome.tabs.sendMessage(tabId, { action: 'summarizeYouTubeVideo' });
     } else if (command === 'showResponseHistory') {
-      chrome.tabs.sendMessage(tabId, { action: 'showResponseHistory' });
+      chrome.tabs.create({ url: 'https://bytarch.netlify.app/dashboard/history?tab=sky' });
     }
   });
 });

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sky Auto Answer (Lite)",
-  "version": "1.0.9",
+  "version": "1.0.512",
   "description": " versatile Chrome extension designed to assist students by providing contextual assistance and quick access to study materials. Sky enhances learning efficiency with powerful.",
 
   "content_scripts": [
@@ -44,18 +44,15 @@
   },
   "commands": {
    "startScreenRecord": {
-    "suggested_key": {
-      "default": "Alt+R"
-    },
     "description": "Start screen recording"
   },
   "stopScreenRecord": {
-    "suggested_key": {
-      "default": "Alt+S"
-    },
     "description": "Stop screen recording"
   },
     "hideShowFloatingDiv": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
       "description": "Hide or Show Floating Div"
     },
     "askGenie": {
@@ -65,13 +62,14 @@
       "description": "Ask Sky"
     },
     "showResponseHistory": {
-      "suggested_key": {
-        "default": "Alt+H"
-      },
       "description": "Show Response History"
     },
     "takeScreenshot": {
+
       "description": "Take Screenshot of Selected Area & Answers using Ask Sky"
+    },
+    "summarizeYouTube": {
+      "description": "Summarize YouTube Video"
     }
   }
 }
