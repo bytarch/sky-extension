@@ -137,8 +137,12 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
     if (contextText.trim()) {
       // Show a loading message
       window.updateFloatingDivWithMarkdown('Thinking...');
-      
+
       chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt'], async (result) => {
+        if (!result.selectedModel || !result.apikey || !result.customPrompt) {
+          window.updateFloatingDivWithMarkdown('Please set your API key, select a model, and set your instruction prompt in model-selection.html.');
+          return;
+        }
         const model = result.selectedModel;
         let apikey = result.apikey;
         let userQuestion = window.PRIMARY_PROMPT;
@@ -250,6 +254,10 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
   // Function to process the screenshot with base64 image
   function processScreenshot(base64Image) {
     chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt'], async (result) => {
+      if (!result.selectedModel || !result.apikey || !result.customPrompt) {
+        window.updateFloatingDivWithMarkdown('Please set your API key, select a model, and set your instruction prompt in model-selection.html.');
+        return;
+      }
     const model = result.selectedModel;
       let apikey = result.apikey;
       let userQuestion = 'What\'s in this image?'; // Fixed text for image

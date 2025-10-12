@@ -66,7 +66,7 @@
     <div id="settings-prompt-content" class="hidden space-y-4">
       <label for="custom-prompt" class="block font-semibold mb-2">Custom Instructions Prompt (optional):</label>
       <p class="text-gray-700 text-sm mb-2">An introduction is set automatically for answering questions only. You can change it by entering your own below.</p>
-      
+
       <div class="mb-4">
         <label class="block font-semibold mb-2">Default Prompts:</label>
         <div class="flex space-x-4 mb-2">
@@ -75,8 +75,9 @@
         </div>
         <p class="text-gray-600 text-sm mb-4">Select a default prompt or create your own below.</p>
       </div>
-      
+
       <textarea id="custom-prompt" rows="6" class="w-full p-2 border border-gray-300 rounded" placeholder="Enter your own Instructions"></textarea>
+      <div id="prompt-saving-indicator" class="text-blue-600 hidden mt-2">Saving prompt...</div>
       <p class="text-gray-600 text-sm mt-1 mb-4 whitespace-pre-wrap">These instructions tell the AI how to treat the highlighted text and how to respond, for example, to summarize, give straight answers, or follow other response styles. You are setting how the AI should respond.</p>
     </div>
   </section>

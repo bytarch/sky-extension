@@ -1,3 +1,7 @@
+
+importScripts('notification.js');
+importScripts('notification-notifier.js');
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll();
 
@@ -30,7 +34,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // Context menu to summarize YouTube video
   chrome.contextMenus.create({
     id: "summarizeYouTube",
-    title: "Summarize YouTube Video",
+    title: "YouTube Video Report",
     contexts: ["page"]
   });
 
@@ -44,10 +48,36 @@ chrome.runtime.onInstalled.addListener(() => {
   // Context menu to take screenshot
   chrome.contextMenus.create({
     id: "takeScreenshot",
-    title: "Take Screenshot",
+    title: "Ask Sky w/ Screenshot",
     contexts: ["all"]
   });
+
+  // Start notification scheduling on installation
+  startNotificationScheduling();
+
+  // Show welcome notification on installation
+  showWelcomeNotification();
 });
+
+
+
+// Start notification scheduling when background script loads
+startNotificationScheduling();
+
+// Function to check for updates and show notification
+async function checkUpdateAndNotify() {
+  try {
+    const updateInfo = await checkForUpdates();
+    if (updateInfo.hasUpdate) {
+      showUpdateNotification(updateInfo.version, updateInfo.features);
+    }
+  } catch (error) {
+    console.log('Update check failed:', error);
+  }
+}
+
+// Check for updates on startup
+checkUpdateAndNotify();
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'captureScreenshot') {
@@ -63,6 +93,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         });
       }
     });
+  } else if (message.action === 'showWelcomeNotification') {
+    showWelcomeNotification();
+  } else if (message.action === 'showSetupNotification') {
+    showSetupNotification();
+  } else if (message.action === 'showShortcutNotifications') {
+    showShortcutNotifications();
+  } else if (message.action === 'showFeatureTips') {
+    showFeatureTips();
+  } else if (message.action === 'showUpdateNotification') {
+    showUpdateNotification(message.version, message.features, message.notes);
   }
 });
 
@@ -140,3 +180,4 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 });
+

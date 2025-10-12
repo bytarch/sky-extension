@@ -177,6 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const customPromptInput = document.getElementById('custom-prompt');
   const summarizePromptBtn = document.getElementById('summarize-prompt');
   const answerPromptBtn = document.getElementById('answer-prompt');
+  const promptSavingIndicator = document.getElementById('prompt-saving-indicator');
 
   // Default prompts
   const defaultPrompts = {
@@ -198,6 +199,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-save with debounce
   let debounceTimer;
   async function savePromptViaAPI(prompt) {
+    // Show saving indicator
+    promptSavingIndicator.classList.remove('hidden');
+
     if (debounceTimer) clearTimeout(debounceTimer);
     debounceTimer = setTimeout(async () => {
       try {
@@ -206,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           configs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
           // If the latest config has the same prompt, do nothing
           if (configs[0].system_prompt === prompt) {
+            promptSavingIndicator.classList.add('hidden');
             return;
           } else {
             // Update the latest config
@@ -215,8 +220,11 @@ document.addEventListener('DOMContentLoaded', () => {
           // No configs, create new
           await window.SkyConfigsAPI.create(prompt);
         }
+        // Hide saving indicator after save
+        promptSavingIndicator.classList.add('hidden');
       } catch (error) {
         console.error('Failed to save prompt:', error);
+        promptSavingIndicator.classList.add('hidden');
       }
     }, 1000); // 1 second debounce
   }
@@ -277,17 +285,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const selectedModelId = result.selectedModel;
 
       fetch('https://flow-models.bytarch.dpdns.org/genie-extension.json')
-        .then(response => response.json())
-        .then(data => {
-          if (data && data.data && Array.isArray(data.data)) {
-            // Store all models for filtering
-            allModels = data.data;
-            // Render all models initially
-            renderModels(allModels);
-          } else {
-            modelList.textContent = 'No models found.';
-          }
-        })
+       .then(response => response.json())
+       .then(data => {
+         if (data && data.data && Array.isArray(data.data)) {
+           // Store all models for filtering
+           allModels = data.data;
+           // Set first model as selected if none selected
+           if (!selectedModelId && allModels.length > 0) {
+             chrome.storage.local.set({ selectedModel: allModels[0].id });
+           }
+           // Render all models initially
+           renderModels(allModels);
+         } else {
+           modelList.textContent = 'No models found.';
+         }
+       })
         .catch(error => {
           modelList.textContent = 'Failed to load models.';
           console.error('Error fetching models:', error);

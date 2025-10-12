@@ -15,11 +15,13 @@ function createFloatingChatDiv() {
     transform: translateX(-50%);
     width: 400px;
     height: 300px;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: white;
     padding: 12px;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     cursor: grab;
     user-select: none;
     font-family: sans-serif;
@@ -37,9 +39,10 @@ function createFloatingChatDiv() {
     overflow-y: auto;
     margin-bottom: 10px;
     padding: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
   `;
   floatingChatDiv.appendChild(chatHistory);
 
@@ -56,11 +59,12 @@ function createFloatingChatDiv() {
   input.style.cssText = `
     flex: 1;
     padding: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.4);
     color: white;
     outline: none;
+    backdrop-filter: blur(5px);
   `;
   inputGroup.appendChild(input);
 
@@ -68,9 +72,10 @@ function createFloatingChatDiv() {
   sendButton.textContent = 'Send';
   sendButton.style.cssText = `
     padding: 8px 12px;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
-    background-color: #007bff;
+    background-color: rgba(0, 123, 255, 0.8);
+    backdrop-filter: blur(10px);
     color: white;
     cursor: pointer;
   `;
@@ -98,14 +103,18 @@ function createFloatingChatDiv() {
       word-wrap: break-word;
     }
     .chat-bubble.user {
-      background-color: #007bff;
+      background-color: rgba(0, 123, 255, 0.66);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
       color: white;
       align-self: flex-end;
       margin-left: auto;
     }
     .chat-bubble.assistant {
-      background-color: rgba(255, 255, 255, 0.8);
-      color: black;
+      background-color: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
       align-self: flex-start;
       margin-right: auto;
     }
@@ -158,11 +167,18 @@ function createFloatingChatDiv() {
     position: absolute;
     top: 5px;
     right: 5px;
-    background: none;
-    border: none;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    backdrop-filter: blur(10px);
     color: white;
     font-size: 20px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   `;
   closeButton.onclick = () => {
     if (floatingChatDiv) {
@@ -245,7 +261,7 @@ async function sendChatMessage() {
       chatMessages.push({ role: 'assistant', content: accumulatedText });
 
       // Log the response to the sky_responses endpoint
-      fetch('https://api.bytarch.dpdns.org/sky/sky_responses', {
+      fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

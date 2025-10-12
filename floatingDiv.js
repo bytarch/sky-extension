@@ -8,14 +8,15 @@ floatingDiv.style.cssText = `
   transform: translateX(-50%);
   width: 600px;
   height: auto;
-  background-color: rgba(0, 0, 0, 0.4);
-  
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   /* Allow container to expand slightly with content */
   max-height: 300px;
   color: white;
   padding: 8px 12px;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
   cursor: grab;
   user-select: none;
   font-family: sans-serif;
@@ -40,17 +41,18 @@ style.textContent = `
   }
   
   #floating-div::-webkit-scrollbar-track {
-    background: rgba(74, 144, 226, 0.3);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 4px;
   }
-  
+
   #floating-div::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
   }
-  
+
   #floating-div::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.5);
   }
 
   #response-div {
@@ -268,7 +270,7 @@ function updateFloatingDivWithMarkdown(content, append = false) {
         padding: 4px 8px;
         border: none;
         border-radius: 6px;
-        background-color: #28a745;
+       background: rgba(0, 123, 255, 0.49); backdrop-filter: blur(10px); color: white; border-radius: 4px; cursor: pointer; 
         color: white;
         cursor: pointer;
         font-size: 12px;

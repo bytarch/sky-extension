@@ -47,6 +47,7 @@
   async function getSkyConfigs() {
     try {
       const result = await apiRequest('GET', API_BASE);
+      chrome.storage.local.set({ customPrompt: systemPrompt });
       return result; // Assuming it returns array directly
     } catch (error) {
       console.error('Error fetching sky configs:', error);
@@ -59,6 +60,7 @@
     try {
       const body = { system_prompt: systemPrompt };
       const result = await apiRequest('POST', API_BASE, body);
+     chrome.storage.local.set({ customPrompt: systemPrompt });
       return result; // Assuming it returns created config ID and/or the config
     } catch (error) {
       console.error('Error creating sky config:', error);
@@ -71,6 +73,7 @@
     try {
       const body = { system_prompt: systemPrompt };
       const result = await apiRequest('PUT', `${API_BASE}/${id}`, body);
+      chrome.storage.local.set({ customPrompt: systemPrompt });
       return result;
     } catch (error) {
       console.error('Error updating sky config:', error);
