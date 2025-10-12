@@ -12,7 +12,7 @@ function compareVersions(v1, v2) {
 
 function checkForUpdates() {
   const current = chrome.runtime.getManifest().version;
-  fetch('https://raw.githubusercontent.com/bytarch/sky-extension/refs/heads/main/version.json')
+  fetch('https://raw.githubusercontent.com/bytarch/sky-extension/refs/heads/main/version.json?t=' + Date.now())
     .then(r => r.ok ? r.json() : Promise.reject('bad response'))
     .then(data => {
       const hasUpdate = data.version && data.version !== current &&
