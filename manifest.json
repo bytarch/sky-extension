@@ -31,11 +31,11 @@
   ],
   
   "web_accessible_resources": [
-    {
-      "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js"],
-      "matches": ["<all_urls>"]
-    }
-  ],
+   {
+     "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js"],
+     "matches": ["<all_urls>"]
+   }
+ ],
   "icons": {
     "16": "logo.png",
     "48": "logo.png",
@@ -68,6 +68,9 @@
         "default": "Alt+H"
       },
       "description": "Show Response History"
+    },
+    "takeScreenshot": {
+      "description": "Take Screenshot of Selected Area"
     }
   }
 }

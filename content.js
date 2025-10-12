@@ -6,8 +6,9 @@ function loadFloatingDiv() {
     // Append the floating div to the document body
     document.body.appendChild(window.floatingDiv);
     // Set initial text content
-//    window.updateSelectedModelText();
+ //    window.updateSelectedModelText();
   };
+  window.html2canvasUrl = chrome.runtime.getURL('html2canvas.min.js');
   document.head.appendChild(script);
 }
 
@@ -25,14 +26,55 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
     // Automatically process selection when context menu clicked
     if (request.action === 'askGenieClick' && request.selection) {
+      // Show floating div if hidden
+      if (window.floatingDiv && window.floatingDiv.style.display === 'none') {
+        window.floatingDiv.style.display = 'flex';
+      }
+      // Clear if response visible
+      if (window.responseDiv && window.responseDiv.innerHTML.trim() !== '') {
+        window.floatingDiv.innerHTML = '';
+      }
+      window.updateFloatingDivWithMarkdown('thinking...');
       // Send selected text directly to API
       processUserQuestion( request.selection);
     }  else if (request.action === 'startScreenRecord') {
+    } else if (request.action === 'hideShowFloatingDiv') {
+      if (window.toggleFloatingDivVisibility) {
+        window.toggleFloatingDivVisibility();
+      }
+    } else if (request.action === 'startScreenRecord') {
       startScreenRecording();
     } else if (request.action === 'stopScreenRecord') {
       stopScreenRecording();
     } else if (request.action === 'summarizeYouTubeVideo') {
       checkAndSummarizeYouTubeVideo();
+    } else if (request.action === 'takeScreenshot') {
+
+      startScreenshotMode();
+    } else if (request.action === 'processScreenshot') {
+      // Show floating div if hidden
+      if (window.floatingDiv && window.floatingDiv.style.display === 'none') {
+        window.floatingDiv.style.display = 'flex';
+      }
+      // Clear if response visible
+      if (window.responseDiv && window.responseDiv.innerHTML.trim() !== '') {
+        window.floatingDiv.innerHTML = '';
+      }
+      window.updateFloatingDivWithMarkdown('Processing screenshot...');
+      processScreenshot(request.base64_image);
+    } else if (request.action === 'capturedImage') {
+      // Process captured image from background
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = request.width;
+        canvas.height = request.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, request.left, request.top, request.width, request.height, 0, 0, request.width, request.height);
+        const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+        processScreenshot(base64);
+      };
+      img.src = request.dataUrl;
     }
   });
 
@@ -202,6 +244,105 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
         }
       });
     }
+  }
+
+
+  // Function to process the screenshot with base64 image
+  function processScreenshot(base64Image) {
+    chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt'], async (result) => {
+    const model = result.selectedModel;
+      let apikey = result.apikey;
+      let userQuestion = 'What\'s in this image?'; // Fixed text for image
+      let systemPrompt = window.SYSTEM_PROMPT_MAIN; // default prompt
+      if (result.customPrompt && result.customPrompt.trim() !== '') {
+        userQuestion = result.customPrompt; // or keep as is
+      }else{
+        return window.updateFloatingDivWithMarkdown('Please set a custom prompt for image analysis.');
+      }
+      try {
+        // Decrypt the API key
+        apikey = await window._extDecryptApiKey(apikey);
+
+        if (!systemPrompt) {
+          window.updateFloatingDivWithMarkdown('System prompt not loaded.');
+          console.error('System prompt not loaded.');
+          return;
+        }
+
+        // Content with text and image
+        const content = [
+          { "type": "text", "text": userQuestion },
+          { "type": "image_url", "image_url": { "url": `data:image/jpeg;base64,${base64Image}` } }
+        ];
+
+        let messages = [
+          { role: 'user', content: systemPrompt },
+          { role: 'user', content }
+        ];
+
+        // Send request to the API endpoint
+        fetch('https://api.bytarch.dpdns.org/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + apikey,
+            'Origin': 'sky-local-42069'
+          },
+          body: JSON.stringify({
+            model: model,
+            stream: true,
+            messages: messages
+          })
+        })
+        .then(response => {
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let accumulatedText = '';
+
+          window.updateFloatingDivWithMarkdown('', false);
+
+          function processChunk({ done, value }) {
+            if (done) {
+              // Stream complete, log the response
+              fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + apikey
+                },
+                body: JSON.stringify({
+                  model: model,
+                  prompt: userQuestion,
+                  response: accumulatedText
+                })
+              }).catch(err => console.error('Error logging response:', err));
+              return;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            accumulatedText += chunk;
+            window.updateFloatingDivWithMarkdown(chunk, true);
+
+            reader.read().then(processChunk).catch(error => {
+              window.updateFloatingDivWithMarkdown('Error reading stream.');
+              console.error('Stream reading error:', error);
+            });
+          }
+
+          reader.read().then(processChunk).catch(error => {
+            window.updateFloatingDivWithMarkdown('Error starting stream.');
+            console.error('Stream start error:', error);
+          });
+        })
+        .catch(error => {
+          window.updateFloatingDivWithMarkdown('Error fetching response.');
+          console.error('API fetch error:', error);
+        });
+      } catch (decryptError) {
+        window.updateFloatingDivWithMarkdown('Error decrypting API key.');
+        console.error('API key decryption error:', decryptError);
+      }
+    });
   }
 
 

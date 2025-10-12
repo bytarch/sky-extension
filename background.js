@@ -40,6 +40,30 @@ chrome.runtime.onInstalled.addListener(() => {
     title: "Show Response History",
     contexts: ["all"]
   });
+
+  // Context menu to take screenshot
+  chrome.contextMenus.create({
+    id: "takeScreenshot",
+    title: "Take Screenshot",
+    contexts: ["all"]
+  });
+});
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === 'captureScreenshot') {
+    chrome.tabs.captureVisibleTab({format: 'png'}, (dataUrl) => {
+      if (dataUrl) {
+        chrome.tabs.sendMessage(sender.tab.id, {
+          action: 'capturedImage',
+          dataUrl: dataUrl,
+          left: message.left,
+          top: message.top,
+          width: message.width,
+          height: message.height
+        });
+      }
+    });
+  }
 });
 
 chrome.action.onClicked.addListener((tab) => {
@@ -57,7 +81,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
       action: 'askGenieClick',
       selection: info.selectionText
     });
- 
+  
   } else if (info.menuItemId === "hideShowFloatingDiv") {
     chrome.tabs.sendMessage(tab.id, {
       action: 'hideShowFloatingDiv'
@@ -80,9 +104,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     chrome.tabs.sendMessage(tab.id, {
       action: 'showResponseHistory'
     });
+  } else if (info.menuItemId === "takeScreenshot") {
+    chrome.tabs.sendMessage(tab.id, {
+      action: 'takeScreenshot'
+    });
   }
 });
- 
+
 chrome.commands.onCommand.addListener((command) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const tabId = tabs[0].id;
@@ -112,4 +140,3 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 });
-

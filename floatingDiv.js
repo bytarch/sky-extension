@@ -320,27 +320,113 @@ function showInputField(selectedText) {
 
 window.showInputField = showInputField;
 
- // Listen for reload action to update the floating div state
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'hideShowFloatingDiv') {
-    toggleFloatingDivVisibility();
-  } else if (message.action === 'askGenieClick') {
-    // Only show floating div if it is currently hidden
-    if (floatingDiv.style.display === 'none') {
-      toggleFloatingDivVisibility();
-      // If response is visible, clear everything
-      if (window.responseDiv && window.responseDiv.innerHTML.trim() !== '') {
-        floatingDiv.innerHTML = '';
-      }
-      // Automatically send the question and show loading state
-      updateFloatingDivWithMarkdown('thinking...');
-      // TODO: Implement sending the question to the backend or extension logic
-      // For example, send a message to background or content script to process the question
-    
-      chrome.runtime.sendMessage({
-        action: 'processQuestion',
-        question: message.selection || ''
-      });
+// Function to start screenshot mode
+function startScreenshotMode() {
+  startSelection();
+}
+
+function startSelection() {
+  let isSelecting = false;
+  let startX, startY, endX, endY;
+
+  // Create overlay
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2);
+    cursor: crosshair;
+    z-index: 999999;
+  `;
+
+  // Create selection div
+  const selection = document.createElement('div');
+  selection.style.cssText = `
+    position: absolute;
+    border: 2px solid #fff;
+    background: rgba(255, 255, 255, 0.2);
+    pointer-events: none;
+    display: none;
+  `;
+  overlay.appendChild(selection);
+
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('mousedown', (e) => {
+    isSelecting = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    selection.style.left = startX + 'px';
+    selection.style.top = startY + 'px';
+    selection.style.width = '0px';
+    selection.style.height = '0px';
+    selection.style.display = 'block';
+  });
+
+  overlay.addEventListener('mousemove', (e) => {
+    if (!isSelecting) return;
+    endX = e.clientX;
+    endY = e.clientY;
+
+    const left = Math.min(startX, endX);
+    const top = Math.min(startY, endY);
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
+
+    selection.style.left = left + 'px';
+    selection.style.top = top + 'px';
+    selection.style.width = width + 'px';
+    selection.style.height = height + 'px';
+  });
+
+  overlay.addEventListener('mouseup', (e) => {
+    if (!isSelecting) return;
+    isSelecting = false;
+    overlay.remove();
+
+    if (Math.abs(endX - startX) < 10 || Math.abs(endY - startY) < 10) {
+      // Too small selection, ignore
+      return;
     }
-  }
-});
+
+    const left = Math.min(startX, endX);
+    const top = Math.min(startY, endY);
+    const width = Math.abs(endX - startX);
+    const height = Math.abs(endY - startY);
+
+    // Show floating div if hidden
+    if (floatingDiv && floatingDiv.style.display === 'none') {
+      floatingDiv.style.display = 'flex';
+    }
+    // Clear if response visible
+    if (window.responseDiv && window.responseDiv.innerHTML.trim() !== '') {
+      floatingDiv.innerHTML = '';
+    }
+    updateFloatingDivWithMarkdown('Processing screenshot...');
+
+    // Send to background to capture
+    chrome.runtime.sendMessage({
+      action: 'captureScreenshot',
+      left: left,
+      top: top,
+      width: width,
+      height: height
+    });
+  });
+
+  // Allow escape to cancel
+  const escHandler = (e) => {
+    if (e.key === 'Escape') {
+      document.removeEventListener('keydown', escHandler);
+      overlay.remove();
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+}
+
+window.startScreenshotMode = startScreenshotMode;
+
+// Listener removed - messages now handled by content script
