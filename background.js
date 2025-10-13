@@ -65,8 +65,6 @@ chrome.runtime.onInstalled.addListener(() => {
 startNotificationScheduling();
 
 
-// Check for updates on startup
-checkUpdateAndNotify();
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'captureScreenshot') {
