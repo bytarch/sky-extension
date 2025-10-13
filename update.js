@@ -1,22 +1,20 @@
-function compareVersions(v1, v2) {
-  const a = v1.split('.').map(Number);
-  const b = v2.split('.').map(Number);
-  for (let i = 0; i < Math.max(a.length, b.length); i++) {
-    if ((a[i] || 0) > (b[i] || 0)) return 1;
-    if ((a[i] || 0) < (b[i] || 0)) return -1;
-  }
-  return 0;
-}
 
 
 
 function checkForUpdates() {
   const current = chrome.runtime.getManifest().version;
+  let hasUpdate = false;
   fetch('https://raw.githubusercontent.com/bytarch/sky-extension/refs/heads/main/version.json?t=' + Date.now())
     .then(r => r.ok ? r.json() : Promise.reject('bad response'))
     .then(data => {
-      const hasUpdate = data.version && data.version !== current &&
-                       compareVersions(data.version, current) > 0;
+      if (!data || !data.version) {
+        console.log('Update check: invalid data', data);
+        return;
+      }
+      if( current !== data.version) {
+      hasUpdate = true;
+      }
+      
       console.log('Update check:', { current, fetched: data.version, hasUpdate });
      
       if (hasUpdate) {

@@ -64,17 +64,6 @@ chrome.runtime.onInstalled.addListener(() => {
 // Start notification scheduling when background script loads
 startNotificationScheduling();
 
-// Function to check for updates and show notification
-async function checkUpdateAndNotify() {
-  try {
-    const updateInfo = await checkForUpdates();
-    if (updateInfo.hasUpdate) {
-      showUpdateNotification(updateInfo.version, updateInfo.features);
-    }
-  } catch (error) {
-    console.log('Update check failed:', error);
-  }
-}
 
 // Check for updates on startup
 checkUpdateAndNotify();

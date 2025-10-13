@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       const selectedModelId = result.selectedModel;
 
-      fetch('https://flow-models.bytarch.dpdns.org/genie-extension.json')
+      fetch('https://flow-models.bytarch.dpdns.org/genie-extension.json?t='+ Date.now())
        .then(response => response.json())
        .then(data => {
          if (data && data.data && Array.isArray(data.data)) {

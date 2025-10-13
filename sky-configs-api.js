@@ -47,7 +47,6 @@
   async function getSkyConfigs() {
     try {
       const result = await apiRequest('GET', API_BASE);
-      chrome.storage.local.set({ customPrompt: systemPrompt });
       return result; // Assuming it returns array directly
     } catch (error) {
       console.error('Error fetching sky configs:', error);
