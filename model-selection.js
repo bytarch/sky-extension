@@ -199,6 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-save with debounce
   let debounceTimer;
   async function savePromptViaAPI(prompt) {
+    
+    if (!prompt || prompt.trim() === '') return;
+    // Save to local storage as well for backup
+    if (chrome && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.set({ customPrompt: prompt });
+    }
+    
     // Show saving indicator
     promptSavingIndicator.classList.remove('hidden');
 
@@ -273,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load API key from storage
   if (chrome && chrome.storage && chrome.storage.local) {
-    chrome.storage.local.get(['apikey', 'selectedModel'], async (result) => {
+    chrome.storage.local.get(['apikey', 'selectedModel','customPrompt'], async (result) => {
       if (result.apikey) {
         const decrypted = await (window._extDecryptApiKey ? window._extDecryptApiKey(result.apikey) : result.apikey);
         apikeyInput.value = decrypted;
@@ -281,6 +288,10 @@ document.addEventListener('DOMContentLoaded', () => {
           const loadUsageForToken = window.loadUsageForToken;
           loadUsageForToken(decrypted, usageContent);
         }
+      }
+      if (!result.customPrompt) {
+        
+        savePromptViaAPI(defaultPrompts.answer);
       }
       const selectedModelId = result.selectedModel;
 
@@ -307,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   } else {
     // Fallback if chrome.storage is not available
-    fetch('https://flow-models.bytarch.dpdns.org/genie-extension.json')
+    fetch('https://flow-models.bytarch.dpdns.org/genie-extension.json?t='+ Date.now())
       .then(response => response.json())
       .then(data => {
         if (data && data.data && Array.isArray(data.data)) {

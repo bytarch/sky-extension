@@ -1,8 +1,6 @@
 {
-  "version": "1.1.600",
+  "version": "1.1.700",
   "notes": [
-   "- Improved version consistency check between manifest.json and version.json files.",
-   "- Fixed minor bugs in the update checking mechanism.",
-   "- Free Models integrated."
+   "- Fixed the way users save instruction prompts."
   ]
 }

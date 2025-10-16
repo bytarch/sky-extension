@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Sky Auto Answer (Lite)",
-  "version": "1.1.600",
+  "version": "1.1.700",
   "description": " versatile Chrome extension designed to assist students by providing contextual assistance and quick access to study materials. Sky enhances learning efficiency with powerful.",
 
   "content_scripts": [
@@ -65,7 +65,6 @@
       "description": "Show Response History"
     },
     "takeScreenshot": {
-
       "description": "Take Screenshot of Selected Area & Answers using Ask Sky"
     },
     "summarizeYouTube": {
