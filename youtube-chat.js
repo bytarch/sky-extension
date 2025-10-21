@@ -217,7 +217,7 @@ async function sendChatMessage() {
       const systemMessage = context ? `You are chatting about the following content: ${context}` : '';
 
       const messages = [
-        { role: 'system', content: systemMessage },
+        { role: 'user', content: systemMessage },
         ...chatMessages
       ];
 

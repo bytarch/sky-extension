@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Sky Auto Answer (Lite)",
-  "version": "1.1.700",
+  "name": "Sky Lite (Lite)",
+  "version": "2.0.0",
   "description": " versatile Chrome extension designed to assist students by providing contextual assistance and quick access to study materials. Sky enhances learning efficiency with powerful.",
 
   "content_scripts": [

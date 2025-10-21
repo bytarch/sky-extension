@@ -90,20 +90,49 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       // Handle data available event
       mediaRecorder.ondataavailable = function(event) {
         if (event.data && event.data.size > 0) {
-          // You can do something with the recorded data, e.g., send it to the background script
-          // For now, let's log it or create a download link
           const videoBlob = event.data;
           console.log('Recorded video blob:', videoBlob);
 
-          // Example: Create a download link (for testing purposes)
-          const url = URL.createObjectURL(videoBlob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-          a.download = 'screen-recording.webm';
-          document.body.appendChild(a);
-          a.click();
-          URL.revokeObjectURL(url);
+          // Create FormData for upload
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5); // Format: 2025-10-21T18-31-52
+          const filename = `screen-recording-${timestamp}.webm`;
+          const formData = new FormData();
+          formData.append('file', videoBlob, filename);
+
+          // Upload to the API
+          fetch('https://api.bytarch.dpdns.org/v1/upload', {
+            method: 'POST',
+            headers: {
+              'accept': '*/*',
+              'accept-language': 'en-US,en;q=0.9',
+              'authorization': 'bearer df56da71-8c50-44f5-9e99-9116b9a57102',
+              'origin': 'https://genieaibz.netlify.app',
+              'priority': 'u=1, i',
+              'referer': 'https://genieaibz.netlify.app/',
+              'sec-ch-ua': '"Google Chrome";v="141", "Not?A_Brand";v="8", "Chromium";v="141"',
+              'sec-ch-ua-mobile': '?0',
+              'sec-ch-ua-platform': '"Windows"',
+              'sec-fetch-dest': 'empty',
+              'sec-fetch-mode': 'cors',
+              'sec-fetch-site': 'cross-site',
+              'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36'
+            },
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log('Upload successful:', data.url);
+              window.updateFloatingDivWithMarkdown('Recording saved to: ' + data.url);
+            } else {
+              console.error('Upload failed:', data);
+              window.updateFloatingDivWithMarkdown('Failed to save recording.');
+            }
+          })
+          .catch(error => {
+            console.error('Upload error:', error);
+            window.updateFloatingDivWithMarkdown('Error saving recording.');
+          });
         }
       };
 
@@ -170,8 +199,8 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           // Prepare the messages array with only a user role message containing the combined prompt and question
           let messages = [
             
-            { role: 'user', content: systemPrompt },
-            { role: 'user', content: combinedUserContent }
+            { role: 'user', content: `${systemPrompt}\n\n${combinedUserContent}` },
+           
           ];
           
           // Send request to the API endpoint
@@ -279,15 +308,16 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           console.error('System prompt not loaded.');
           return;
         }
-
+ const combinedUserContent = `<user_question_with_instructions_to_follow>${userQuestion}</user_question_with_instructions_to_follow>\n\n<content_you_should_answer>based on the provided image.</content_you_should_answer>`;
+         
         // Content with text and image
         const content = [
-          { "type": "text", "text": userQuestion },
+          { "type": "text", "text": `${systemPrompt}\n\n${combinedUserContent}` },
           { "type": "image_url", "image_url": { "url": `data:image/jpeg;base64,${base64Image}` } }
         ];
 
         let messages = [
-          { role: 'user', content: systemPrompt },
+        //  { role: 'user', content: systemPrompt },
           { role: 'user', content }
         ];
 
@@ -335,18 +365,18 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             window.updateFloatingDivWithMarkdown(chunk, true);
 
             reader.read().then(processChunk).catch(error => {
-              window.updateFloatingDivWithMarkdown('Error reading stream.');
+              window.updateFloatingDivWithMarkdown(error);
               console.error('Stream reading error:', error);
             });
           }
 
           reader.read().then(processChunk).catch(error => {
-            window.updateFloatingDivWithMarkdown('Error starting stream.');
+            window.updateFloatingDivWithMarkdown(error);
             console.error('Stream start error:', error);
           });
         })
         .catch(error => {
-          window.updateFloatingDivWithMarkdown('Error fetching response.');
+          window.updateFloatingDivWithMarkdown(error);
           console.error('API fetch error:', error);
         });
       } catch (decryptError) {
