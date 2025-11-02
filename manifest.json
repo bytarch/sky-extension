@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "Sky (Lite)",
+  "version": "2.1.5",
+  "description": "Everything you need, all in one place. Sky (Lite) is your AI-powered assistant for seamless browsing, content creation, and productivity.",
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["crypto-storage.js", "youtube-summarizer.js", "youtube-chat.js", "response-history.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js", "notification.js", "update.js", "features/voice.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Sky (Lite)",
+    "default_popup": "model-selection.html"
+  },
+  "permissions": [
+    "storage",
+    "contextMenus",
+    "activeTab",
+    "scripting",
+    "desktopCapture",
+    "notifications"
+  ],
+  "externally_connectable": {
+    "matches": ["https://bytarch.netlify.app/*"]
+  },
+  "host_permissions": [
+    "https://flow-models.bytarch.dpdns.org/*",
+    "https://api.bytarch.dpdns.org/*"
+  ],
+  
+  "web_accessible_resources": [
+   {
+     "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js"],
+     "matches": ["<all_urls>"]
+   }
+ ],
+  "icons": {
+    "16": "logo.png",
+    "48": "logo.png",
+    "128": "logo.png"
+  },
+  "commands": {
+   "startScreenRecord": {
+    "description": "Start screen recording"
+  },
+  "stopScreenRecord": {
+    "description": "Stop screen recording"
+  },
+    "hideShowFloatingDiv": {
+      "suggested_key": {
+        "default": "Alt+Q"
+      },
+      "description": "Hide or Show Floating Div"
+    },
+    "askGenie": {
+      "suggested_key": {
+        "default": "Alt+A"
+      },
+      "description": "Ask Sky"
+    },
+    "showResponseHistory": {
+      "description": "Show Response History"
+    },
+    "takeScreenshot": {
+      "description": "Take Screenshot of Selected Area & Answers using Ask Sky"
+    },
+    "summarizeYouTube": {
+      "description": "Summarize YouTube Video"
+    }
+  }
+}

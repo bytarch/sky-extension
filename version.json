@@ -1,0 +1,9 @@
+{
+  "version": "2.1.5",
+  "notes": [
+   "- This version includes bytarch account login and automatic verification of account.",
+   "- Free models have been improved and better error handling",
+   "- Sky theme has been added. and improved visualization of model listing and more default instructions.",
+   "- All responses from free models (those with 'free' in their type) are now made public."
+  ]
+}
