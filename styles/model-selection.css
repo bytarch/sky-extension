@@ -3,7 +3,7 @@ body {
   backdrop-filter: blur(20px);
   overflow: hidden;
   position: relative;
-  font-size: 10px;
+  font-size: 14px;
 }
 
 /* Stars */

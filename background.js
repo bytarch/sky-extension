@@ -115,10 +115,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.action.onClicked.addListener((tab) => {
-  chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    files: ["popup.js"]
-  });
+  chrome.sidePanel.open({ windowId: tab.windowId });
 });
 
 // Handle clicks on the context menu item

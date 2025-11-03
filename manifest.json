@@ -15,8 +15,10 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "Sky (Lite)",
-    "default_popup": "model-selection.html"
+    "default_title": "Sky (Lite)"
+  },
+  "side_panel": {
+    "default_path": "model-selection.html"
   },
   "permissions": [
     "storage",
@@ -24,7 +26,8 @@
     "activeTab",
     "scripting",
     "desktopCapture",
-    "notifications"
+    "notifications",
+    "sidePanel"
   ],
   "externally_connectable": {
     "matches": ["https://bytarch.netlify.app/*"]
