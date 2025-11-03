@@ -115,16 +115,42 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 chrome.action.onClicked.addListener((tab) => {
-  chrome.sidePanel.open({ windowId: tab.windowId });
+  chrome.storage.local.get(['sidePanelOpen'], (result) => {
+    const isOpen = result.sidePanelOpen || false;
+    if (isOpen) {
+      chrome.sidePanel.close({ windowId: tab.windowId });
+      chrome.storage.local.set({ sidePanelOpen: false });
+    } else {
+      chrome.sidePanel.open({ windowId: tab.windowId });
+      chrome.storage.local.set({ sidePanelOpen: true });
+    }
+  });
 });
 
 // Handle clicks on the context menu item
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === "askGenie" && info.selectionText) {
-    // Single message to handle ask-genie click and state logic in content script
-    chrome.tabs.sendMessage(tab.id, {
-      action: 'askGenieClick',
-      selection: info.selectionText
+    // Capture HTML of selected text
+    chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        let selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+          let range = selection.getRangeAt(0);
+          let clonedSelection = range.cloneContents();
+          let div = document.createElement('div');
+          div.appendChild(clonedSelection);
+          return div.innerHTML;
+        }
+        return null;
+      }
+    }, (results) => {
+      const selectedHtml = results && results[0] ? results[0].result : null;
+      chrome.tabs.sendMessage(tab.id, {
+        action: 'askGenieClick',
+        selection: info.selectionText,
+        html: selectedHtml
+      });
     });
   
   } else if (info.menuItemId === "hideShowFloatingDiv") {
@@ -174,11 +200,23 @@ chrome.commands.onCommand.addListener((command) => {
     } else if (command === 'askGenie') {
       chrome.scripting.executeScript({
         target: { tabId },
-        func: () => window.getSelection().toString()
+        func: () => {
+          let selection = window.getSelection();
+          if (selection.rangeCount > 0) {
+            let range = selection.getRangeAt(0);
+            let clonedSelection = range.cloneContents();
+            let div = document.createElement('div');
+            div.appendChild(clonedSelection);
+            let html = div.innerHTML;
+            let text = selection.toString();
+            return { text, html };
+          }
+          return null;
+        }
       }, (results) => {
-        const selectedText = results && results[0] ? results[0].result : '';
-        if (selectedText) {
-          chrome.tabs.sendMessage(tabId, { action: 'askGenieClick', selection: selectedText });
+        const result = results && results[0] ? results[0].result : null;
+        if (result && result.text) {
+          chrome.tabs.sendMessage(tabId, { action: 'askGenieClick', selection: result.text, html: result.html });
         } else {
           console.warn('No text selected for Ask Genie.');
         }
