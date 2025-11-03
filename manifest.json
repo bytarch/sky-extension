@@ -39,7 +39,7 @@
   
   "web_accessible_resources": [
    {
-     "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js"],
+     "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js", "views/chat.html"],
      "matches": ["<all_urls>"]
    }
  ],
