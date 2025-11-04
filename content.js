@@ -193,7 +193,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       // Show a loading message
       window.updateFloatingDivWithMarkdown('Thinking...');
 
-      chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt'], async (result) => {
+      chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt', 'autoPublish'], async (result) => {
         // Check if selected model is free by fetching model list
         let isFreeModel = false;
         try {
@@ -267,7 +267,9 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             // Function to process each chunk
             function processChunk({ done, value }) {
               if (done) {
-         
+                   if(!result.autoPublish || !apikey){
+                  return;
+                }
                 // Stream complete
                 // Log the response to the sky_responses endpoint
                 fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
@@ -286,26 +288,15 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
                   if (!response.ok) {
                     console.error('Failed to log response');
                   } else {
-                    // If using free model, update to public
-                    if (isFreeModel) {
+                    // If using free model and auto-publish is enabled, update to public
+                    if (result.autoPublish === true) {
                       fetch(`https://api.bytarch.dpdns.org/v1/sky/sky_responses/${data.id}`, {
                         method: 'PUT',
                         headers: {
                           'Content-Type': 'application/json',
                           'Authorization': 'Bearer '+ (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e'),
                           'accept': '*/*',
-                          'accept-language': 'en-US,en;q=0.9',
-                          'origin': 'https://bytarch.netlify.app',
-                          'priority': 'u=1, i',
-                          'referer': 'https://bytarch.netlify.app/',
-                          'sec-ch-ua': '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
-                          'sec-ch-ua-mobile': '?0',
-                          'sec-ch-ua-platform': '"Windows"',
-                          'sec-fetch-dest': 'empty',
-                          'sec-fetch-mode': 'cors',
-                          'sec-fetch-site': 'cross-site',
-                          'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
-                        },
+                          },
                         body: JSON.stringify({
                           "is_public": true,
                           "category": null
@@ -351,7 +342,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
   // Function to process the screenshot with base64 image
   function processScreenshot(base64Image) {
-    chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt'], async (result) => {
+    chrome.storage.local.get(['selectedModel', 'apikey', 'customPrompt', 'autoPublish'], async (result) => {
       // Check if selected model is free by fetching model list
       let isFreeModel = false;
       try {
@@ -425,7 +416,9 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
           function processChunk({ done, value }) {
             if (done) {
-            
+             if(!result.autoPublish || !apikey){
+                  return;
+                }
               // Stream complete, log the response
               fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
                 method: 'POST',
@@ -443,26 +436,14 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
                 if (!response.ok) {
                   console.error('Failed to log response');
                 } else {
-                  // If using free model, update to public
-                  if (isFreeModel) {
+                  // If using free model and auto-publish is enabled, update to public
+                  if (result.autoPublish === true) {
                     fetch(`https://api.bytarch.dpdns.org/v1/sky/sky_responses/${data.id}`, {
                       method: 'PUT',
                       headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer 64bc09ef-064c-4c2c-a29e-eafe1134978e',
-                        'accept': '*/*',
-                        'accept-language': 'en-US,en;q=0.9',
-                        'origin': 'https://bytarch.netlify.app',
-                        'priority': 'u=1, i',
-                        'referer': 'https://bytarch.netlify.app/',
-                        'sec-ch-ua': '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
-                        'sec-ch-ua-mobile': '?0',
-                        'sec-ch-ua-platform': '"Windows"',
-                        'sec-fetch-dest': 'empty',
-                        'sec-fetch-mode': 'cors',
-                        'sec-fetch-site': 'cross-site',
-                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
-                      },
+                        'Authorization': 'Bearer ' + (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e'),
+                        'accept': '*/*',},
                       body: JSON.stringify({
                         "is_public": true,
                         "category": null

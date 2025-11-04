@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const filterVision = document.getElementById('filter-vision');
   const filterSummary = document.getElementById('filter-summary');
   const filterQa = document.getElementById('filter-qa');
+  const autoPublishToggle = document.getElementById('auto-publish-toggle');
 
   // Add event listener for search input
   if (modelSearch) {
@@ -415,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Load API key from storage
   if (chrome && chrome.storage && chrome.storage.local) {
-    chrome.storage.local.get(['apikey', 'selectedModel','customPrompt'], async (result) => {
+    chrome.storage.local.get(['apikey', 'selectedModel','customPrompt', 'autoPublish'], async (result) => {
       if (result.apikey) {
         apikeySection.classList.remove('hidden');
         loginSection.classList.add('hidden');
@@ -433,6 +434,13 @@ document.addEventListener('DOMContentLoaded', () => {
        // If no custom prompt saved, set default to Answer Questions (but don't show in textarea)
        // This ensures the default behavior is "Answer Questions" without displaying the prompt text
        chrome.storage.local.set({ customPrompt: defaultPrompts.answer });
+     }
+     // Load auto-publish setting
+     if (autoPublishToggle) {
+       autoPublishToggle.checked = result.autoPublish !== false; // Default to true
+       autoPublishToggle.addEventListener('change', () => {
+         chrome.storage.local.set({ autoPublish: autoPublishToggle.checked });
+       });
      }
       const selectedModelId = result.selectedModel;
 

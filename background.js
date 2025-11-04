@@ -56,7 +56,7 @@ chrome.runtime.onInstalled.addListener(() => {
   // Context menu to speak selected text
   chrome.contextMenus.create({
     id: "speakText",
-    title: "Speak Selected Text",
+    title: "Speak Text",
     contexts: ["selection"]
   });
 
