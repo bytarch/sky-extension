@@ -77,6 +77,8 @@ function setupAuthEventListeners() {
         loginStatus.classList.remove('hidden');
         return;
       }
+      loginStatus.textContent = 'Logging in...';
+      loginStatus.classList.remove('hidden');
       try {
         await performLogin(email, password);
         loginStatus.classList.add('hidden');
@@ -96,6 +98,8 @@ function setupAuthEventListeners() {
         loginStatus.classList.remove('hidden');
         return;
       }
+      loginStatus.textContent = 'Registering...';
+      loginStatus.classList.remove('hidden');
       try {
         await performRegister(email, password);
         loginStatus.classList.add('hidden');

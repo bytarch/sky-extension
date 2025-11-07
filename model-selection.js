@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modelList = document.getElementById('model-list');
   const modelLoading = document.getElementById('model-loading');
   const modelSearch = document.getElementById('model-search');
+  const modelSelectionStatus = document.getElementById('model-selection-status');
   const modelsSection = document.getElementById('models-section');
   const settingsSection = document.getElementById('settings-section');
   const tabModels = document.getElementById('tab-models');
@@ -114,15 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Get selected model ID
     chrome.storage.local.get(['selectedModel'], (result) => {
       let selectedModelId = result.selectedModel;
-
-      // Check if selected model exists in current filtered list
-      const selectedModelExists = modelsToRender.some(model => model.id === selectedModelId);
-
-      // If selected model doesn't exist in filtered results, switch to first model
-      if (!selectedModelExists && modelsToRender.length > 0) {
-        selectedModelId = modelsToRender[0].id;
-        chrome.storage.local.set({ selectedModel: selectedModelId, isFreeModel: modelsToRender.find(m => m.id === selectedModelId)?.type.toLowerCase().includes('free') });
-      }
 
       // Sort models so selected model appears first
       modelsToRender.sort((a, b) => {
@@ -457,9 +449,18 @@ document.addEventListener('DOMContentLoaded', () => {
          if (data && data.data && Array.isArray(data.data)) {
            // Store all models for filtering
            allModels = data.data;
-           // Set first model as selected if none selected
-           if (!selectedModelId && allModels.length > 0) {
-             chrome.storage.local.set({ selectedModel: allModels[0].id, isFreeModel: allModels[0].type.toLowerCase().includes('free') });
+           // Set first model as selected if none selected or if selected model not in the list
+           if ((!selectedModelId || !allModels.some(model => model.id === selectedModelId)) && allModels.length > 0) {
+             const newSelectedId = allModels[0].id;
+             chrome.storage.local.set({ selectedModel: newSelectedId, isFreeModel: allModels[0].type.toLowerCase().includes('free') });
+             selectedModelId = newSelectedId; // Update local variable
+             // Show notification that model was auto-selected
+             if (modelSelectionStatus) {
+               modelSelectionStatus.classList.remove('hidden');
+               setTimeout(() => {
+                 modelSelectionStatus.classList.add('hidden');
+               }, 5000); // Hide after 5 seconds
+             }
            }
            // Render all models initially
            renderModels(allModels);

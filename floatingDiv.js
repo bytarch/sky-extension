@@ -300,8 +300,7 @@ function updateFloatingDivWithMarkdown(content, append = false) {
   }
 }
 
-window.renderMarkdown = renderMarkdown;
-window.updateFloatingDivWithMarkdown = updateFloatingDivWithMarkdown;
+
 
 // Function to extend chat
 function extendChat() {

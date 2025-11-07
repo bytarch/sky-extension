@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Sky (Lite)",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Everything you need, all in one place. Sky (Lite) is your AI-powered assistant for seamless browsing, content creation, and productivity.",
 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["crypto-storage.js", "youtube-summarizer.js", "youtube-chat.js", "response-history.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js", "notification.js", "update.js", "features/voice.js"],
+      "js": ["lib/renderMarkdown.js", "crypto-storage.js", "youtube-summarizer.js", "youtube-chat.js", "response-history.js", "content.js", "system_prompts/systemprompt.js", "floatingDiv.js", "notification.js", "update.js", "features/voice.js"],
       "css": ["content.css"]
     }
   ],
@@ -39,7 +39,7 @@
   
   "web_accessible_resources": [
    {
-     "resources": ["model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js", "views/chat.html"],
+     "resources": ["lib/renderMarkdown.js", "model-selection.html", "model-selection.js", "tailwind-cdn.js", "floatingDiv.js", "html2canvas.min.js", "views/chat.html"],
      "matches": ["<all_urls>"]
    }
  ],

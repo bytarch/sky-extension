@@ -1,7 +1,6 @@
 {
-  "version": "2.1.10",
+  "version": "2.1.11",
   "notes": [
-   "- Patch release fixing shortcuts issues and response saving errors.",
-   "- Added a toggle to save or not save responses."
+   "- Patch release fixed auto-model-select-bug."
   ]
 }
