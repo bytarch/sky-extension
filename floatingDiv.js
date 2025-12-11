@@ -5,15 +5,16 @@ floatingDiv.style.cssText = `
   position: fixed;
   top: 10px;
   left: 50%;
+  font-color:
   transform: translateX(-50%);
   width: 600px;
   height: auto;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.17);
   backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   /* Allow container to expand slightly with content */
   max-height: 300px;
-  color: white;
+  color: rgba(255, 255, 255, 1);
   padding: 8px 12px;
   border-radius: 12px;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);

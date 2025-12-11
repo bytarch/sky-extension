@@ -267,16 +267,15 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             // Function to process each chunk
             function processChunk({ done, value }) {
               if (done) {
-                   if(!result.autoPublish || !apikey){
-                  return;
+                   if(!apikey){
+                    apikey = "64bc09ef-064c-4c2c-a29e-eafe1134978e"
                 }
-                // Stream complete
-                // Log the response to the sky_responses endpoint
+            
                 fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e')
+                    'Authorization': 'Bearer ' + (apikey)
                   },
                   body: JSON.stringify({
                     model: model,
@@ -294,7 +293,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
                         method: 'PUT',
                         headers: {
                           'Content-Type': 'application/json',
-                          'Authorization': 'Bearer '+ (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e'),
+                          'Authorization': 'Bearer '+ (apikey),
                           'accept': '*/*',
                           },
                         body: JSON.stringify({
@@ -416,15 +415,15 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
           function processChunk({ done, value }) {
             if (done) {
-             if(!result.autoPublish || !apikey){
-                  return;
+             if(!apikey){
+                    apikey = "64bc09ef-064c-4c2c-a29e-eafe1134978e"
                 }
               // Stream complete, log the response
               fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e')
+                  'Authorization': 'Bearer ' + (apikey)
                 },
                 body: JSON.stringify({
                   model: model,
@@ -442,7 +441,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
                       method: 'PUT',
                       headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + (apikey || '64bc09ef-064c-4c2c-a29e-eafe1134978e'),
+                        'Authorization': 'Bearer ' + (apikey),
                         'accept': '*/*',},
                       body: JSON.stringify({
                         "is_public": true,

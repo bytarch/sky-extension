@@ -1,6 +1,7 @@
 {
-  "version": "2.1.11",
+  "version": "2.2.1",
   "notes": [
-   "- Patch release fixed auto-model-select-bug."
+   "- Fixed Syncing issue of instructions from between dashboard & extension.",
+   "- Fixed coloring with floating div."
   ]
 }

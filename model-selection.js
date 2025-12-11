@@ -348,40 +348,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000); // 1 second debounce
   }
 
-  // Load saved custom prompt from local storage, then API if available
-  async function loadPrompt() {
-    const defaultPrompt = "Answer the following multiple choice and true/false questions based on the provided text. Provide only the correct answers without explanations.";
+// Load custom prompt ONLY from SkyConfigs API (fallback to default prompt)
+async function loadPrompt() {
+  const defaultPrompt =
+    "Answer the following multiple choice and true/false questions based on the provided text. Provide only the correct answers without explanations.";
 
-    // First, check local storage
-    chrome.storage.local.get(['customPrompt'], async (result) => {
-      if (result.customPrompt) {
-        // If a custom prompt is saved, show the container and load it
+  // Check if API key exists
+  chrome.storage.local.get(['apikey'], async (apiResult) => {
+    if (!apiResult.apikey) {
+      // No API key → hide container, use default
+      customPromptContainer.classList.add('hidden');
+      customPromptInput.value = defaultPrompt;
+      chrome.storage.local.set({ customPrompt: defaultPrompt });
+      return;
+    }
+
+    try {
+      const configs = await window.SkyConfigsAPI.getAll();
+
+      if (configs && configs.length > 0) {
+        // Use newest config
+        configs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+
         customPromptContainer.classList.remove('hidden');
-        customPromptInput.value = result.customPrompt;
+        customPromptInput.value = configs[0].system_prompt;
+        
+     chrome.storage.local.set({ customPrompt: configs[0].system_prompt });
+        
       } else {
-        // Check if API key exists and load from API
-        chrome.storage.local.get(['apikey'], async (apiResult) => {
-          if (apiResult.apikey) {
-            try {
-              const configs = await window.SkyConfigsAPI.getAll();
-              if (configs && configs.length > 0) {
-                configs.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
-                customPromptContainer.classList.remove('hidden');
-                customPromptInput.value = configs[0].system_prompt;
-                // Also save to local storage
-                chrome.storage.local.set({ customPrompt: configs[0].system_prompt });
-              }
-              // If no configs, keep container hidden
-            } catch (error) {
-              console.error('Failed to load prompt from API:', error);
-              // Keep container hidden
-            }
-          }
-          // If no API key, keep container hidden
-        });
+        // No configs from API
+        customPromptContainer.classList.add('hidden');
+        customPromptInput.value = defaultPrompt;
+        
+     chrome.storage.local.set({ customPrompt: defaultPrompt });
       }
-    });
-  }
+    } catch (error) {
+      console.error('Failed to load prompt from API:', error);
+
+      // Error → hide container, fall back to default
+      customPromptContainer.classList.add('hidden');
+      customPromptInput.value = defaultPrompt;
+    }
+  });
+}
+
 
   loadPrompt();
 
