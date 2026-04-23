@@ -91,7 +91,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       mediaRecorder.ondataavailable = function(event) {
         if (event.data && event.data.size > 0) {
           const videoBlob = event.data;
-          console.log('Recorded video blob:', videoBlob);
 
           // Create FormData for upload
           const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5); // Format: 2025-10-21T18-31-52
@@ -106,7 +105,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
               try {
                 apikey = await window._extDecryptApiKey(apikey);
                 // Upload to the API
-                fetch('https://api.bytarch.dpdns.org/v1/upload', {
+                fetch('https://api.bytarch.com/v1/openai/upload', {
                   method: 'POST',
                   headers: {
                     'accept': '*/*',
@@ -128,20 +127,16 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
                 .then(response => response.json())
                 .then(data => {
                   if (data.success) {
-                    console.log('Upload successful:', data.url);
                     window.updateFloatingDivWithMarkdown('Recording saved to: ' + data.url);
                   } else {
-                    console.error('Upload failed:', data);
                     window.updateFloatingDivWithMarkdown('Failed to save recording.');
                   }
                 })
                 .catch(error => {
-                  console.error('Upload error:', error);
                   window.updateFloatingDivWithMarkdown('Error saving recording.');
                 });
               } catch (decryptError) {
                 window.updateFloatingDivWithMarkdown('Error decrypting API key.');
-                console.error('API key decryption error:', decryptError);
               }
             } else {
               // Save locally
@@ -161,11 +156,9 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
       // Start the recording
       mediaRecorder.start();
-      console.log('Screen recording started.');
       window.updateFloatingDivWithMarkdown('Recording started...');
 
     } catch (error) {
-      console.error('Error starting screen recording:', error);
       window.updateFloatingDivWithMarkdown('Error starting recording. Please grant screen recording permission.');
     }
   }
@@ -178,10 +171,8 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
       if (screenStream) {
         screenStream.getTracks().forEach(track => track.stop());
       }
-      console.log('Screen recording stopped.');
       window.updateFloatingDivWithMarkdown('Recording stopped.');
     } else {
-      console.log('No active screen recording to stop.');
       window.updateFloatingDivWithMarkdown('No active recording to stop.');
     }
   }
@@ -204,7 +195,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             isFreeModel = selectedModelData.type.toLowerCase().includes('free');
           }
         } catch (error) {
-          console.error('Error checking model type:', error);
         }
         if (!result.selectedModel || /*!result.apikey ||*/ !result.customPrompt) {
           window.updateFloatingDivWithMarkdown('Please set your API key, select a model, and set your instruction prompt in model-selection.html.');
@@ -224,7 +214,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           // Check if system prompt is loaded
           if (!systemPrompt) {
             window.updateFloatingDivWithMarkdown('System prompt not loaded.');
-            console.error('System prompt not loaded.');
             return;
           }
           
@@ -246,7 +235,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           if (apikey) {
             headers['Authorization'] = 'Bearer ' + apikey;
           }
-          fetch('https://api.bytarch.dpdns.org/v1/chat/completions', {
+          fetch('https://api.bytarch.com/v1/openai/chat/completions', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({
@@ -267,43 +256,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
             // Function to process each chunk
             function processChunk({ done, value }) {
               if (done) {
-                   if(!apikey){
-                    apikey = "64bc09ef-064c-4c2c-a29e-eafe1134978e"
-                }
-            
-                fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + (apikey)
-                  },
-                  body: JSON.stringify({
-                    model: model,
-                    prompt: combinedUserContent,
-                    response: accumulatedText
-                  })
-                }).then(response => response.json())
-                .then(data => {
-                  if (!response.ok) {
-                    console.error('Failed to log response');
-                  } else {
-                    // If using free model and auto-publish is enabled, update to public
-                    if (result.autoPublish === true) {
-                      fetch(`https://api.bytarch.dpdns.org/v1/sky/sky_responses/${data.id}`, {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json',
-                          'Authorization': 'Bearer '+ (apikey),
-                          'accept': '*/*',
-                          },
-                        body: JSON.stringify({
-                          "is_public": true,
-                          "category": null
-                        })
-                      }).catch(err => console.error('Error updating to public:', err));
-                    }
-                  }
-                }).catch(err => console.error('Error logging response:', err));
                 return;
               }
               
@@ -316,23 +268,19 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
               // Continue reading
               reader.read().then(processChunk).catch(error => {
                 window.updateFloatingDivWithMarkdown('Error reading stream.');
-                console.error('Stream reading error:', error);
               });
             }
             
             // Start reading the stream
             reader.read().then(processChunk).catch(error => {
               window.updateFloatingDivWithMarkdown('Error starting stream.');
-              console.error('Stream start error:', error);
             });
           })
           .catch(error => {
             window.updateFloatingDivWithMarkdown('Error fetching response.');
-            console.error('API fetch error:', error);
           });
         } catch (decryptError) {
           window.updateFloatingDivWithMarkdown('Error decrypting API key.');
-          console.error('API key decryption error:', decryptError);
         }
       });
     }
@@ -352,7 +300,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
           isFreeModel = selectedModelData.type.toLowerCase().includes('free');
         }
       } catch (error) {
-        console.error('Error checking model type:', error);
       }
       if (!result.selectedModel ||/* !result.apikey ||*/ !result.customPrompt) {
         window.updateFloatingDivWithMarkdown('Please set your API key, select a model, and set your instruction prompt in model-selection.html.');
@@ -373,7 +320,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
         if (!systemPrompt) {
           window.updateFloatingDivWithMarkdown('System prompt not loaded.');
-          console.error('System prompt not loaded.');
           return;
         }
  const combinedUserContent = `<user_question_with_instructions_to_follow>${userQuestion}</user_question_with_instructions_to_follow>\n\n<content_you_should_answer>based on the provided image.</content_you_should_answer>`;
@@ -397,7 +343,7 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
         if (apikey) {
           headers['Authorization'] = 'Bearer ' + apikey;
         }
-        fetch('https://api.bytarch.dpdns.org/v1/chat/completions', {
+        fetch('https://api.bytarch.com/v1/openai/chat/completions', {
           method: 'POST',
           headers: headers,
           body: JSON.stringify({
@@ -415,42 +361,6 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
           function processChunk({ done, value }) {
             if (done) {
-             if(!apikey){
-                    apikey = "64bc09ef-064c-4c2c-a29e-eafe1134978e"
-                }
-              // Stream complete, log the response
-              fetch('https://api.bytarch.dpdns.org/v1/sky/sky_responses', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': 'Bearer ' + (apikey)
-                },
-                body: JSON.stringify({
-                  model: model,
-                  prompt: userQuestion,
-                  response: accumulatedText
-                })
-              }).then(response => response.json())
-              .then(data => {
-                if (!response.ok) {
-                  console.error('Failed to log response');
-                } else {
-                  // If using free model and auto-publish is enabled, update to public
-                  if (result.autoPublish === true) {
-                    fetch(`https://api.bytarch.dpdns.org/v1/sky/sky_responses/${data.id}`, {
-                      method: 'PUT',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + (apikey),
-                        'accept': '*/*',},
-                      body: JSON.stringify({
-                        "is_public": true,
-                        "category": null
-                      })
-                    }).catch(err => console.error('Error updating to public:', err));
-                  }
-                }
-              }).catch(err => console.error('Error logging response:', err));
               return;
             }
 
@@ -460,22 +370,18 @@ if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.onMessage)
 
             reader.read().then(processChunk).catch(error => {
               window.updateFloatingDivWithMarkdown(error);
-              console.error('Stream reading error:', error);
             });
           }
 
           reader.read().then(processChunk).catch(error => {
             window.updateFloatingDivWithMarkdown(error);
-            console.error('Stream start error:', error);
           });
         })
         .catch(error => {
           window.updateFloatingDivWithMarkdown(error);
-          console.error('API fetch error:', error);
         });
       } catch (decryptError) {
         window.updateFloatingDivWithMarkdown('Error decrypting API key.');
-        console.error('API key decryption error:', decryptError);
       }
     });
   }

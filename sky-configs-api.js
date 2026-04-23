@@ -1,5 +1,5 @@
 (function() {
-  const API_BASE = 'https://api.bytarch.dpdns.org/v1/sky/sky_configs';
+  const API_BASE = 'https://api.bytarch.com/v1/sky/sky_config';
 
   async function getBearerToken() {
     return new Promise((resolve) => {

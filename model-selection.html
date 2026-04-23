@@ -1,4 +1,3 @@
-<script src="system_prompts/default-prompts.js"></script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,145 +7,163 @@
   <script src="tailwind-cdn.js"></script>
   <link rel="stylesheet" href="styles/model-selection.css">
 </head>
-<body class="flex flex-col items-center p-4 overflow-y-auto" >
-   <!-- Stars -->
-   <div class="star" style="top: 10%; left: 10%; width: 2px; height: 2px;"></div>
-   <div class="star" style="top: 15%; left: 25%; width: 1px; height: 1px;"></div>
-   <div class="star" style="top: 8%; left: 40%; width: 2px; height: 2px;"></div>
-   <div class="star" style="top: 20%; left: 60%; width: 1px; height: 1px;"></div>
-   <div class="star" style="top: 12%; left: 75%; width: 2px; height: 2px;"></div>
-   <div class="star" style="top: 25%; left: 85%; width: 1px; height: 1px;"></div>
-   <div class="star" style="top: 5%; left: 90%; width: 2px; height: 2px;"></div>
-   <div class="star" style="top: 30%; left: 15%; width: 1px; height: 1px;"></div>
-   <div class="star" style="top: 18%; left: 50%; width: 2px; height: 2px;"></div>
-   <div class="star" style="top: 22%; left: 70%; width: 1px; height: 1px;"></div>
-
-   <!-- Clouds -->
-   <div class="cloud" style="top: 20%;">☁️</div>
-   <div class="cloud" style="top: 35%;">☁️</div>
-   <div class="cloud" style="top: 50%;">☁️</div>
-
-
-   <h1 class="text-3xl font-bold mb-6 text-white drop-shadow-lg">Extension</h1>
-
-   <nav class="w-full max-w-2xl mb-4">
-     <ul class="flex space-x-4 text-cyan-300">
-       <li><button id="tab-models" class="pb-2 border-b-2 border-cyan-300 font-semibold text-white">Models</button></li>
-       <li><button id="tab-settings" class="pb-2 border-b-2 border-transparent hover:border-cyan-300 text-gray-300 hover:text-white">Settings</button></li>
-     </ul>
-   </nav>
-
-  <section id="models-section" class="w-full max-w-2xl space-y-4">
-    <div class="mb-4">
-      <input type="text" id="model-search" class="w-full p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-cyan-300 focus:border-transparent" placeholder="Search models...">
-      <div class="mt-2 flex flex-wrap gap-4">
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="filter-free" class="mr-2 accent-cyan-300">
-          Free
-        </label>
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="filter-premium" class="mr-2 accent-cyan-300">
-          Premium
-        </label>
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="filter-vision" class="mr-2 accent-cyan-300">
-          Vision
-        </label>
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="filter-summary" class="mr-2 accent-cyan-300">
-          Summary
-        </label>
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="filter-qa" class="mr-2 accent-cyan-300">
-          Q&A
-        </label>
+<body class="flex min-h-screen">
+  <!-- Modern Sidebar -->
+  <aside class="sidebar-container">
+    <div class="sidebar-header">
+      <div class="logo-wrapper">
+        <div class="logo-icon">🚀</div>
+        <h1 class="logo-text">SkyConfig</h1>
       </div>
-    <div id="model-loading" class="text-center py-8 hidden">
-      <div class="loading-spinner mb-4"></div>
-      <p class="text-white/70 text-sm">Loading models...</p>
     </div>
-    <p id="model-selection-status" class="text-cyan-300 mt-2 hidden">Model auto-selected due to previous selection being unavailable.</p>
-    <div id="model-list" class="mt-4"></div>
-    <div id="model-list" class="mt-4"></div>
+    
+    <nav class="sidebar-nav">
+      <button id="tab-models" class="nav-item active">
+        <span class="nav-icon">📦</span>
+        <span class="nav-label">Models</span>
+      </button>
+      <button id="tab-settings" class="nav-item">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </button>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <div class="version-badge">v1.0</div>
     </div>
-  </section>
+  </aside>
 
-  <section id="settings-section" class="w-full max-w-2xl space-y-4 hidden">
-    <div class="mb-4">
-      <ul class="flex space-x-4 text-cyan-300">
-        <li><button id="tab-settings-main" class="pb-2 border-b-2 border-cyan-300 font-semibold text-white">API Key</button></li>
-        <li><button id="tab-settings-usage" class="pb-2 border-b-2 border-transparent hover:border-cyan-300 text-gray-300 hover:text-white">Usage</button></li>
-     <li><button id="tab-settings-prompt" class="pb-2 border-b-2 border-transparent hover:border-cyan-300 text-gray-300 hover:text-white">Custom Instructions</button></li>
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Animated Background -->
+    <div class="bg-animation">
+      <div class="star" style="top: 10%; left: 10%; width: 2px; height: 2px;"></div>
+      <div class="star" style="top: 15%; left: 25%; width: 1px; height: 1px;"></div>
+      <div class="star" style="top: 8%; left: 40%; width: 2px; height: 2px;"></div>
+      <div class="star" style="top: 20%; left: 60%; width: 1px; height: 1px;"></div>
+      <div class="star" style="top: 12%; left: 75%; width: 2px; height: 2px;"></div>
+      <div class="star" style="top: 25%; left: 85%; width: 1px; height: 1px;"></div>
+      <div class="star" style="top: 5%; left: 90%; width: 2px; height: 2px;"></div>
+      <div class="star" style="top: 30%; left: 15%; width: 1px; height: 1px;"></div>
+      <div class="star" style="top: 18%; left: 50%; width: 2px; height: 2px;"></div>
+      <div class="star" style="top: 22%; left: 70%; width: 1px; height: 1px;"></div>
+    
+      <div class="cloud" style="top: 20%;">☁️</div>
+      <div class="cloud" style="top: 35%;">☁️</div>
+      <div class="cloud" style="top: 50%;">☁️</div>
+    </div>
 
-      </ul>
+    <div class="content-wrapper">
+      <header class="page-header">
+        <h2 id="page-title" class="page-title">Models</h2>
+        <p class="page-subtitle">Configure your AI models and preferences</p>
+      </header>
+
+      <section id="models-section" class="content-section active">
+        <div class="search-filter-container">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="model-search" placeholder="Search models..." class="search-input">
           </div>
-
-    <div id="settings-main-content" class="space-y-4">
-      <div id="apikey-section" class="space-y-4">
-        <label for="apikey-input" class="block font-semibold mb-2 text-white">API Key:</label>
-        <input id="apikey-input" type="password" class="w-full p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-cyan-300 focus:border-transparent" placeholder="Enter your API key" disabled />
-        <div class="flex space-x-2">
-          <button id="remove-apikey" class="bg-red-500/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-red-600/80 border border-red-400/50">Log Out</button>
+          <div class="filter-chips">
+            <label class="filter-chip">
+              <input type="checkbox" id="filter-free" class="filter-checkbox">
+              <span class="chip-label">Free</span>
+            </label>
+            <label class="filter-chip">
+              <input type="checkbox" id="filter-premium" class="filter-checkbox">
+              <span class="chip-label">Premium</span>
+            </label>
+            <label class="filter-chip">
+              <input type="checkbox" id="filter-vision" class="filter-checkbox">
+              <span class="chip-label">Vision</span>
+            </label>
+            <label class="filter-chip">
+              <input type="checkbox" id="filter-summary" class="filter-checkbox">
+              <span class="chip-label">Summary</span>
+            </label>
+            <label class="filter-chip">
+              <input type="checkbox" id="filter-qa" class="filter-checkbox">
+              <span class="chip-label">Q&A</span>
+            </label>
+          </div>
         </div>
-        <p id="save-status" class="text-green-300 mt-2 hidden">API Key saved!</p>
-        <p id="remove-status" class="text-red-300 mt-2 hidden">Logged out!</p>
-      </div>
-      <div id="login-section" class="space-y-4 hidden">
-        <p class="text-white/80 mb-4">Login to your BytArch Account.</p>
-        <label for="email-input" class="block font-semibold mb-2 text-white">Email:</label>
-        <input id="email-input" type="email" class="w-full p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-cyan-300 focus:border-transparent" placeholder="Enter your email" />
-        <label for="password-input" class="block font-semibold mb-2 text-white">Password:</label>
-        <input id="password-input" type="password" class="w-full p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-cyan-300 focus:border-transparent" placeholder="Enter your password" />
-        <div class="flex space-x-2">
-          <button id="login-btn" class="bg-cyan-500/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-cyan-600/80 border border-cyan-400/50">Login</button>
-          <button id="register-btn" class="bg-green-500/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-green-600/80 border border-green-400/50">Register</button>
+
+        <div id="model-loading" class="loading-state hidden">
+          <div class="loading-spinner"></div>
+          <p class="loading-text">Loading models...</p>
         </div>
-        <p id="login-status" class="text-red-300 mt-2 hidden">Failed!</p>
-      </div>
-      <div id="auto-publish-section" class="space-y-4">
-        <label for="auto-publish-toggle" class="block font-semibold mb-2 text-white">Auto-publish free model responses:</label>
-        <label class="flex items-center text-white cursor-pointer">
-          <input type="checkbox" id="auto-publish-toggle" class="mr-2 accent-cyan-300" checked>
-          Enable auto-publishing of responses from free models to public
-        </label>
-      </div>
+        
+        <p id="model-selection-status" class="status-message hidden">Model auto-selected due to previous selection being unavailable.</p>
+        <div id="model-list" class="model-grid"></div>
+      </section>
+
+      <section id="settings-section" class="content-section hidden">
+        <div class="settings-tabs">
+          <button id="tab-settings-main" class="settings-tab active">
+            <span class="tab-icon">🔑</span>
+            API Key
+          </button>
+          <button id="tab-settings-prompt" class="settings-tab">
+            <span class="tab-icon">📝</span>
+            Custom Instructions
+          </button>
+        </div>
+
+        <div id="settings-main-content" class="settings-content active">
+          <div id="apikey-section" class="settings-card">
+            <h3 class="card-title">API Configuration</h3>
+            <label for="apikey-input" class="input-label">API Key:</label>
+            <input id="apikey-input" type="password" class="modern-input" placeholder="Enter your API key" />
+            <div class="button-group">
+              <button id="save-apikey" class="btn btn-primary">Save API Key</button>
+              <button id="remove-apikey" class="btn btn-danger">Remove</button>
+            </div>
+            <p id="save-status" class="status-success hidden">✓ API Key saved!</p>
+            <p id="remove-status" class="status-error hidden">✗ API Key removed!</p>
+            <p class="usage-link">Track your usage at <a href="https://bytarch.com/profile/usage" target="_blank">bytarch.com/profile/usage</a></p>
+          </div>
+          
+          <div id="auto-publish-section" class="settings-card">
+            <h3 class="card-title">Auto-Publish Settings</h3>
+            <label class="toggle-switch">
+              <input type="checkbox" id="auto-publish-toggle" class="toggle-checkbox" checked>
+              <span class="toggle-slider"></span>
+              <span class="toggle-label">Enable auto-publishing of responses from free models to public</span>
+            </label>
+          </div>
+        </div>
+        
+        <div id="settings-prompt-content" class="settings-content hidden">
+          <div class="settings-card">
+            <h3 class="card-title">Custom Instructions</h3>
+            <p class="card-description">An introduction is set automatically for answering questions only. You can change it by entering your own below.</p>
+            
+            <div class="prompt-presets">
+              <h4 class="preset-title">Default Prompts:</h4>
+              <div class="preset-buttons">
+                <button id="summarize-prompt" class="preset-btn">Summarize</button>
+                <button id="answer-prompt" class="preset-btn">Answer Questions</button>
+                <button id="study-prompt" class="preset-btn">Answer w/ Explanation</button>
+                <button id="explain-prompt" class="preset-btn">Explain & Learn More</button>
+              </div>
+              <p class="preset-hint">Select a default prompt or <button id="customize-prompt-btn" class="link-button">customize your own</button>.</p>
+            </div>
+
+            <div id="custom-prompt-container" class="custom-prompt-area hidden">
+              <textarea id="custom-prompt" rows="6" class="modern-textarea" placeholder="Enter your own Instructions"></textarea>
+            </div>
+            
+            <div id="prompt-saving-indicator" class="saving-indicator hidden">Saving prompt...</div>
+            <p class="prompt-info">These instructions tell the AI how to treat the highlighted text and how to respond, for example, to summarize, give straight answers, or follow other response styles. You are setting how the AI should respond.</p>
+          </div>
+        </div>
+      </section>
     </div>
+  </main>
 
-    <div id="settings-usage-content" class="hidden">
-      <h3 class="font-semibold mb-2 text-white">Usage Information</h3>
-      <div id="usage-content" class="bg-white/10 backdrop-blur-sm p-4 rounded-lg border border-white/20 text-white/80">
-        No usage data available
-      </div>
-    </div>
-    <div id="settings-prompt-content" class="hidden space-y-4">
-      <label for="custom-prompt" class="block font-semibold mb-2 text-white">Custom Instructions Prompt (optional):</label>
-      <p class="text-white/80 text-sm mb-2">An introduction is set automatically for answering questions only. You can change it by entering your own below.</p>
-
-     <div class="mb-4">
-       <label class="block font-semibold mb-2 text-white">Default Prompts:</label>
-       <div class="flex space-x-4 mb-2 flex-wrap">
-         <button id="summarize-prompt" class="bg-white/20 backdrop-blur-sm text-white/90 px-4 py-2 rounded-lg hover:bg-white/30 border border-white/30">Summarize</button>
-         <button id="answer-prompt" class="bg-white/20 backdrop-blur-sm text-white/90 px-4 py-2 rounded-lg hover:bg-white/30 border border-white/30">Answer Questions</button>
-         <button id="study-prompt" class="bg-white/20 backdrop-blur-sm text-white/90 px-4 py-2 rounded-lg hover:bg-white/30 border border-white/30">Answer Questions w/ Explanation</button>
-         <button id="explain-prompt" class="bg-white/20 backdrop-blur-sm text-white/90 px-4 py-2 rounded-lg hover:bg-white/30 border border-white/30">Explain & Learn More</button>
-       </div>
-       <p class="text-white/70 text-sm mb-4">Select a default prompt or <button id="customize-prompt-btn" class="text-cyan-300 underline hover:text-cyan-400">customize your own</button>.</p>
-     </div>
-
-     <div id="custom-prompt-container" class="hidden">
-       <textarea id="custom-prompt" rows="6" class="w-full p-3 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-white placeholder-white/70 focus:ring-2 focus:ring-cyan-300 focus:border-transparent" placeholder="Enter your own Instructions"></textarea>
-     </div>
-      <div id="prompt-saving-indicator" class="text-cyan-300 hidden mt-2">Saving prompt...</div>
-      <p class="text-white/70 text-sm mt-1 mb-4 whitespace-pre-wrap">These instructions tell the AI how to treat the highlighted text and how to respond, for example, to summarize, give straight answers, or follow other response styles. You are setting how the AI should respond.</p>
-    </div>
-  </section>
-
-
-  </section>
-
+  <script src="system_prompts/default-prompts.js"></script>
   <script src="crypto-storage.js"></script>
-  <script src="auth/auth.js"></script>
-  <script src="usage.js"></script>
   <script src="sky-configs-api.js"></script>
   <script src="model-selection.js"></script>
 </body>

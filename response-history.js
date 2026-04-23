@@ -243,7 +243,7 @@ function deleteResponse(item) {
     if (apikey) {
       try {
         apikey = await window._extDecryptApiKey(apikey);
-        const url = `https://api.bytarch.dpdns.org/v1/sky/sky_responses/${item.id}`;
+        const url = `https://api.bytarch.com/v1/openai/sky_responses/${item.id}`;
         const headers = {
           'Authorization': 'Bearer ' + apikey
         };
@@ -370,7 +370,7 @@ function fetchAndUpdateHistory() {
 
         updateHistoryFloatingDivWithMarkdown('Fetching response history...');
 
-        const url = 'https://api.bytarch.dpdns.org/v1/sky/sky_responses';
+        const url = 'https://api.bytarch.com/v1/openai/sky_responses';
         const headers = {
           'Authorization': 'Bearer ' + apikey
         };
@@ -388,12 +388,10 @@ function fetchAndUpdateHistory() {
           }
         })
         .catch(error => {
-          console.error('Error fetching history:', error);
           updateHistoryFloatingDivWithMarkdown('Error fetching response history: ' + error.message);
         });
       } catch (decryptError) {
         updateHistoryFloatingDivWithMarkdown('Error decrypting API key.');
-        console.error('API key decryption error:', decryptError);
       }
     } else {
       updateHistoryFloatingDivWithMarkdown('API key not found.');
